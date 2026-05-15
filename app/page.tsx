@@ -8,7 +8,7 @@ export default function Home() {
         <p className="mt-4 text-neutral-500">Tu registro de lectura personal.</p>
         <Link
           href="/login"
-          className="mt-6 inline-block rounded-pill bg-sakura-500 px-6 py-3 font-medium text-white transition-colors hover:bg-sakura-700"
+          className="rounded-pill bg-sakura-500 hover:bg-sakura-700 mt-6 inline-block px-6 py-3 font-medium text-white transition-colors"
         >
           Iniciar sesión
         </Link>
