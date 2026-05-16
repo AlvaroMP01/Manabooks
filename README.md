@@ -98,9 +98,11 @@ pnpm supabase:diff    # show diff between local schema and last migration
 
 > **POST-MERGE: run `supabase db push`**
 > After any PR that contains a migration file is merged to `main`, run:
+>
 > ```bash
 > supabase db push
 > ```
+>
 > This applies pending migrations to the cloud project (`zmypobozuqevpzsyyvbs`).
 > Never edit the schema directly in the Supabase dashboard — migration files are the source of truth (D7).
 
@@ -138,22 +140,22 @@ supabase db push
 
 ## Scripts
 
-| Script              | What it does                                                  |
-| ------------------- | ------------------------------------------------------------- |
-| `pnpm dev`          | Start the dev server (Next.js with Turbopack)                 |
-| `pnpm build`        | Build for production                                          |
-| `pnpm start`        | Start the production server                                   |
-| `pnpm typecheck`    | Run `tsc --noEmit` — zero errors required                     |
-| `pnpm lint`         | Run ESLint with Next.js + TypeScript rules                    |
-| `pnpm format`       | Format all files with Prettier                                |
-| `pnpm format:check` | Check formatting (used in CI)                                 |
-| `pnpm test`         | Run Vitest unit/component tests                               |
-| `pnpm test:e2e`     | Run Playwright end-to-end tests (requires `pnpm dev` running) |
-| `pnpm supabase:start` | Boot local Supabase stack (Postgres + Auth)                 |
-| `pnpm supabase:stop`  | Stop local Supabase stack                                   |
-| `pnpm supabase:reset` | Wipe local DB and replay all migrations                     |
-| `pnpm supabase:diff`  | Show schema diff between local and last migration           |
-| `pnpm supabase:types` | Regenerate `lib/database.types.ts` from local schema        |
+| Script                | What it does                                                  |
+| --------------------- | ------------------------------------------------------------- |
+| `pnpm dev`            | Start the dev server (Next.js with Turbopack)                 |
+| `pnpm build`          | Build for production                                          |
+| `pnpm start`          | Start the production server                                   |
+| `pnpm typecheck`      | Run `tsc --noEmit` — zero errors required                     |
+| `pnpm lint`           | Run ESLint with Next.js + TypeScript rules                    |
+| `pnpm format`         | Format all files with Prettier                                |
+| `pnpm format:check`   | Check formatting (used in CI)                                 |
+| `pnpm test`           | Run Vitest unit/component tests                               |
+| `pnpm test:e2e`       | Run Playwright end-to-end tests (requires `pnpm dev` running) |
+| `pnpm supabase:start` | Boot local Supabase stack (Postgres + Auth)                   |
+| `pnpm supabase:stop`  | Stop local Supabase stack                                     |
+| `pnpm supabase:reset` | Wipe local DB and replay all migrations                       |
+| `pnpm supabase:diff`  | Show schema diff between local and last migration             |
+| `pnpm supabase:types` | Regenerate `lib/database.types.ts` from local schema          |
 
 ## Manual setup steps
 
