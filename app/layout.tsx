@@ -25,7 +25,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <form action="/auth/sign-out" method="POST" className="sr-only">
+          <button type="submit">Cerrar sesión</button>
+        </form>
+      </body>
     </html>
   );
 }
