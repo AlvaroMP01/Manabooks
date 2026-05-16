@@ -17,7 +17,7 @@ Personal book tracking app — log what you read, filter by status, discover new
 
 - Node.js 20+
 - pnpm (`corepack enable && corepack prepare pnpm@latest --activate`)
-- Docker (for Supabase local dev with CLI)
+- Podman (for Supabase local dev — see "Database / Supabase CLI" section below)
 
 ## Setup
 
@@ -29,8 +29,8 @@ pnpm install
 cp .env.example .env.local
 # Fill in the values in .env.local (see "Env vars" section below)
 
-# 3. Start Supabase locally (optional — only needed for migrations)
-supabase start
+# 3. Start Supabase locally (optional — only needed for migrations; see "Database / Supabase CLI" section)
+pnpm supabase:start
 
 # 4. Start dev server
 pnpm dev
@@ -50,19 +50,83 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Copy `.env.example` to `.env.local` and fill in real values. Never commit `.env.local`.
 
-## Supabase CLI (local development)
+## Database / Supabase CLI
+
+### One-time machine setup (Fedora rootless Podman)
+
+Supabase CLI uses Docker under the hood. On Fedora with rootless Podman, expose the socket and point Docker clients at it:
 
 ```bash
-# One-time setup (Podman/Docker required):
-supabase login
-supabase link --project-ref <your-project-ref>
-supabase start
-
-# After adding a migration, regenerate TypeScript types:
-pnpm supabase:types
+# U01 — enable Podman socket
+systemctl --user enable --now podman.socket
+# Add to ~/.zshrc (or ~/.bashrc):
+export DOCKER_HOST="unix:///run/user/$UID/podman/podman.sock"
+source ~/.zshrc
+# Verify:
+echo $DOCKER_HOST
 ```
 
-The `lib/database.types.ts` file is a stub — regenerate it once you have tables.
+### Install Supabase CLI
+
+```bash
+# U02 — install via Homebrew (requires brew)
+brew install supabase/tap/supabase
+supabase --version  # must be >= 1.150
+```
+
+### Login and link to the cloud project
+
+```bash
+# U03 — authenticate (opens browser device-flow)
+supabase login
+
+# U04 — link to the Manabooks project (enter DB password when prompted)
+supabase link --project-ref zmypobozuqevpzsyyvbs
+```
+
+The DB password is the one saved when the Supabase project was first created. It is not stored in this repo.
+
+### Local stack
+
+```bash
+pnpm supabase:start   # boot Postgres + Auth containers locally
+pnpm supabase:stop    # stop them cleanly
+pnpm supabase:reset   # wipe local DB and replay all migrations from scratch
+pnpm supabase:types   # regenerate lib/database.types.ts from local schema
+pnpm supabase:diff    # show diff between local schema and last migration
+```
+
+> **POST-MERGE: run `supabase db push`**
+> After any PR that contains a migration file is merged to `main`, run:
+> ```bash
+> supabase db push
+> ```
+> This applies pending migrations to the cloud project (`zmypobozuqevpzsyyvbs`).
+> Never edit the schema directly in the Supabase dashboard — migration files are the source of truth (D7).
+
+## Working on a feature
+
+When a feature requires a schema change, follow this flow:
+
+```bash
+# 1. Create the migration file (generates a timestamped file in supabase/migrations/)
+supabase migration new <migration_name>
+
+# 2. Write the SQL in the generated file
+
+# 3. Apply locally and verify (wipes local DB, replays all migrations)
+pnpm supabase:reset
+
+# 4. Regenerate TypeScript types from the updated local schema
+pnpm supabase:types
+
+# 5. Write your application code — pnpm typecheck will catch type mismatches
+
+# 6. Commit both the migration file and the updated lib/database.types.ts
+
+# 7. After your PR merges to main, push to cloud:
+supabase db push
+```
 
 ## Google OAuth setup
 
@@ -85,6 +149,11 @@ The `lib/database.types.ts` file is a stub — regenerate it once you have table
 | `pnpm format:check` | Check formatting (used in CI)                                 |
 | `pnpm test`         | Run Vitest unit/component tests                               |
 | `pnpm test:e2e`     | Run Playwright end-to-end tests (requires `pnpm dev` running) |
+| `pnpm supabase:start` | Boot local Supabase stack (Postgres + Auth)                 |
+| `pnpm supabase:stop`  | Stop local Supabase stack                                   |
+| `pnpm supabase:reset` | Wipe local DB and replay all migrations                     |
+| `pnpm supabase:diff`  | Show schema diff between local and last migration           |
+| `pnpm supabase:types` | Regenerate `lib/database.types.ts` from local schema        |
 
 ## Manual setup steps
 
