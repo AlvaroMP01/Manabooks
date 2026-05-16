@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import type { Database } from "@/lib/database.types";
 

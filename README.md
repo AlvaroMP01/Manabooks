@@ -40,13 +40,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Env vars
 
-| Variable | Description |
-| --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key — safe to expose |
-| `SUPABASE_SECRET_KEY` | Supabase secret key — **server-only, never prefix with NEXT_PUBLIC_** |
-| `GOOGLE_BOOKS_API_KEY` | Google Books API key — **server-only, never prefix with NEXT_PUBLIC_** |
-| `NEXT_PUBLIC_SITE_URL` | App origin, e.g. `http://localhost:3000` or your Vercel URL |
+| Variable                               | Description                                                            |
+| -------------------------------------- | ---------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase project URL                                                   |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key — safe to expose                       |
+| `SUPABASE_SECRET_KEY`                  | Supabase secret key — **server-only, never prefix with NEXT*PUBLIC***  |
+| `GOOGLE_BOOKS_API_KEY`                 | Google Books API key — **server-only, never prefix with NEXT*PUBLIC*** |
+| `NEXT_PUBLIC_SITE_URL`                 | App origin, e.g. `http://localhost:3000` or your Vercel URL            |
 
 Copy `.env.example` to `.env.local` and fill in real values. Never commit `.env.local`.
 
