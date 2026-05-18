@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <div className="py-16 text-center">
-      <h1 className="text-4xl font-bold tracking-tight text-neutral-900">Bienvenido a manabooks</h1>
+      <h1 className="text-4xl font-bold tracking-tight text-neutral-900">Bienvenido a Manabooks</h1>
       <p className="mt-4 text-neutral-500">Tu registro de lectura personal.</p>
       <Link
         href="/library"

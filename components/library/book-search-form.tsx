@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,28 +42,37 @@ function BookSearchCard({ book }: { book: Book }) {
   );
 }
 
-export function BookSearchForm() {
-  const [query, setQuery] = useState("");
+export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string }) {
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<Book[] | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const runSearch = useCallback((rawQuery: string) => {
+    const trimmed = rawQuery.trim();
+    if (!trimmed) return;
+
+    startTransition(async () => {
+      const res = await fetch(`/api/books/search?q=${encodeURIComponent(trimmed)}&limit=10`);
+      if (!res.ok) {
+        setResults([]);
+        return;
+      }
+      const json = (await res.json()) as BooksSearchResult;
+      setResults(json.items ?? []);
+    });
+  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (!query.trim()) return;
-
-      startTransition(async () => {
-        const res = await fetch(`/api/books/search?q=${encodeURIComponent(query.trim())}&limit=10`);
-        if (!res.ok) {
-          setResults([]);
-          return;
-        }
-        const json = (await res.json()) as BooksSearchResult;
-        setResults(json.items ?? []);
-      });
+      runSearch(query);
     },
-    [query]
+    [query, runSearch]
   );
+
+  useEffect(() => {
+    if (initialQuery) runSearch(initialQuery);
+  }, [initialQuery, runSearch]);
 
   return (
     <div className="space-y-6">
