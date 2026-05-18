@@ -21,7 +21,7 @@ function BookSearchCard({ book }: { book: Book }) {
           className="rounded-soft h-24 w-16 shrink-0 object-cover"
         />
       ) : (
-        <div aria-hidden="true" className="rounded-soft bg-sakura-100 h-24 w-16 shrink-0" />
+        <div aria-hidden="true" className="rounded-soft bg-mb-pink-soft h-24 w-16 shrink-0" />
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className="truncate font-medium" title={book.title}>
@@ -86,7 +86,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Título, autor o ISBN…"
-          className="focus-visible:ring-sakura-500 flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2"
+          className="focus-visible:ring-mb-pink-deep flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2"
           autoComplete="off"
         />
         <Button type="submit" disabled={isPending || !query.trim()}>

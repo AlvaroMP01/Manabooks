@@ -28,7 +28,7 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
           className="rounded-soft shrink-0 object-cover"
         />
       ) : (
-        <div aria-hidden="true" className="rounded-soft bg-sakura-100 h-24 w-16 shrink-0" />
+        <div aria-hidden="true" className="rounded-soft bg-mb-pink-soft h-24 w-16 shrink-0" />
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <h2 className="truncate text-base font-medium" title={entry.title}>

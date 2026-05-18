@@ -26,7 +26,7 @@ export function HeaderSearch() {
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Buscar libros…"
         autoComplete="off"
-        className="focus-visible:ring-sakura-500 w-full rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-sm transition-shadow outline-none focus-visible:ring-2"
+        className="focus-visible:ring-mb-pink-deep w-full rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-sm transition-shadow outline-none focus-visible:ring-2"
       />
     </form>
   );
