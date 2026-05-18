@@ -1,0 +1,13 @@
+.branches/
+.temp/
+*.env
+import.csv
+
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
