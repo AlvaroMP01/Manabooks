@@ -25,7 +25,7 @@ port = 54322
 shadow_port = 54320
 # The database major version to use. This has to be the same as your remote database's. Run `SHOW
 # server_version;` on the remote database to check.
-major_version = 15
+major_version = 17
 
 [db.pooler]
 enabled = false
@@ -145,7 +145,7 @@ enable_signup = true
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 # Template for sending OTP to users
-otp_message = "Your code is {{ .Code }} ."
+template = "Your code is {{ .Code }} ."
 # Controls the minimum amount of time that must pass before sending another sms otp.
 max_frequency = "5s"
 
@@ -200,7 +200,11 @@ max_frequency = "5s"
 # `discord`, `facebook`, `figma`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`,
 # `notion`, `twitch`, `twitter`, `slack`, `spotify`, `workos`, `zoom`.
 [auth.external.google]
-enabled = true
+# Disabled in local dev — Google OAuth runs against the linked cloud project.
+# The OAuth Web client redirect URI is the cloud callback, not localhost:54321.
+# If you ever need to test Google login against the local stack, add the
+# credentials to `supabase/.env` (gitignored) and flip `enabled = true`.
+enabled = false
 client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
 secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
 # Overrides the default auth redirectUrl.
