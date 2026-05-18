@@ -1,30 +1,25 @@
 import type { EntryStatus } from "@/lib/library/types";
 
-const MESSAGES: Record<EntryStatus | "all", { heading: string; body: string }> =
-  {
-    all: {
-      heading: "Tu biblioteca está vacía",
-      body: "Buscá libros y agregarlos para empezar.",
-    },
-    to_read: {
-      heading: "No tenés libros por leer",
-      body: "Agregá libros a tu lista de lecturas pendientes.",
-    },
-    reading: {
-      heading: "No estás leyendo nada",
-      body: "Marcá un libro como leyendo para verlo acá.",
-    },
-    read: {
-      heading: "Todavía no leíste ningún libro",
-      body: "Cuando termines un libro, va a aparecer acá.",
-    },
-  };
+const MESSAGES: Record<EntryStatus | "all", { heading: string; body: string }> = {
+  all: {
+    heading: "Tu biblioteca está vacía",
+    body: "Buscá libros y agregarlos para empezar.",
+  },
+  to_read: {
+    heading: "No tenés libros por leer",
+    body: "Agregá libros a tu lista de lecturas pendientes.",
+  },
+  reading: {
+    heading: "No estás leyendo nada",
+    body: "Marcá un libro como leyendo para verlo acá.",
+  },
+  read: {
+    heading: "Todavía no leíste ningún libro",
+    body: "Cuando termines un libro, va a aparecer acá.",
+  },
+};
 
-export function LibraryEmptyState({
-  filter,
-}: {
-  filter: EntryStatus | null;
-}) {
+export function LibraryEmptyState({ filter }: { filter: EntryStatus | null }) {
   const key = filter ?? "all";
   const { heading, body } = MESSAGES[key];
 

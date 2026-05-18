@@ -17,12 +17,10 @@ export function AccountMenu({ email }: { email: string | null }) {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Menú de cuenta"
-        className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-sakura-500"
+        className="focus-visible:ring-sakura-500 rounded-full outline-none focus-visible:ring-2"
       >
         <Avatar>
-          <AvatarFallback className="bg-sakura-100 text-sakura-700">
-            {initial}
-          </AvatarFallback>
+          <AvatarFallback className="bg-sakura-100 text-sakura-700">{initial}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -30,9 +28,9 @@ export function AccountMenu({ email }: { email: string | null }) {
           {email ?? "Sin email"}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem className="p-0">
           <form action="/auth/sign-out" method="post" className="w-full">
-            <button type="submit" className="w-full text-left">
+            <button type="submit" className="w-full px-1.5 py-1 text-left text-sm">
               Cerrar sesión
             </button>
           </form>

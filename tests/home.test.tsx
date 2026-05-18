@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import Home from "@/app/page";
+import Home from "@/app/(app)/page";
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
@@ -17,8 +17,8 @@ describe("Home page", () => {
     expect(screen.getByRole("heading", { name: /manabooks/i })).toBeInTheDocument();
   });
 
-  it("renders a login link when unauthenticated", async () => {
+  it("renders a library link when authenticated", async () => {
     render(await Home());
-    expect(screen.getByRole("link", { name: /iniciar sesión/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /ver mi biblioteca/i })).toBeInTheDocument();
   });
 });

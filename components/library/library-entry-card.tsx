@@ -10,10 +10,7 @@ const STATUS_LABEL: Record<LibraryEntry["status"], string> = {
   read: "Leído",
 };
 
-const STATUS_VARIANT: Record<
-  LibraryEntry["status"],
-  "default" | "secondary" | "outline"
-> = {
+const STATUS_VARIANT: Record<LibraryEntry["status"], "default" | "secondary" | "outline"> = {
   to_read: "outline",
   reading: "secondary",
   read: "default",
@@ -28,21 +25,16 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
           alt=""
           width={64}
           height={96}
-          className="rounded-soft object-cover shrink-0"
+          className="rounded-soft shrink-0 object-cover"
         />
       ) : (
-        <div
-          aria-hidden="true"
-          className="h-24 w-16 shrink-0 rounded-soft bg-sakura-100"
-        />
+        <div aria-hidden="true" className="rounded-soft bg-sakura-100 h-24 w-16 shrink-0" />
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <h2 className="truncate text-base font-medium" title={entry.title}>
           {entry.title}
         </h2>
-        <p className="truncate text-sm text-neutral-700">
-          {entry.authors.join(", ")}
-        </p>
+        <p className="truncate text-sm text-neutral-700">{entry.authors.join(", ")}</p>
         <Badge variant={STATUS_VARIANT[entry.status]} className="mt-1 w-fit">
           {STATUS_LABEL[entry.status]}
         </Badge>

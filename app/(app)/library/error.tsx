@@ -17,9 +17,7 @@ export default function LibraryError({
 
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <p className="text-lg font-medium text-neutral-700">
-        No se pudo cargar tu biblioteca
-      </p>
+      <p className="text-lg font-medium text-neutral-700">No se pudo cargar tu biblioteca</p>
       <p className="mt-2 text-sm text-neutral-500">
         Ocurrió un error inesperado. Podés intentar de nuevo.
       </p>

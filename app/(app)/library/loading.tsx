@@ -13,8 +13,8 @@ export default function LibraryLoading() {
       >
         {Array.from({ length: 6 }).map((_, i) => (
           <li key={i}>
-            <div className="flex gap-4 rounded-xl p-4 ring-1 ring-foreground/10">
-              <Skeleton className="h-24 w-16 shrink-0 rounded-soft" />
+            <div className="ring-foreground/10 flex gap-4 rounded-xl p-4 ring-1">
+              <Skeleton className="rounded-soft h-24 w-16 shrink-0" />
               <div className="flex flex-1 flex-col gap-2">
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />

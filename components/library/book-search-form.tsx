@@ -10,7 +10,7 @@ function BookSearchCard({ book }: { book: Book }) {
   const authors = book.authors?.join(", ") ?? "Autor desconocido";
 
   return (
-    <div className="flex items-start gap-4 rounded-xl p-4 ring-1 ring-foreground/10">
+    <div className="ring-foreground/10 flex items-start gap-4 rounded-xl p-4 ring-1">
       {book.thumbnail ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -18,13 +18,10 @@ function BookSearchCard({ book }: { book: Book }) {
           alt=""
           width={64}
           height={96}
-          className="h-24 w-16 shrink-0 rounded-soft object-cover"
+          className="rounded-soft h-24 w-16 shrink-0 object-cover"
         />
       ) : (
-        <div
-          aria-hidden="true"
-          className="h-24 w-16 shrink-0 rounded-soft bg-sakura-100"
-        />
+        <div aria-hidden="true" className="rounded-soft bg-sakura-100 h-24 w-16 shrink-0" />
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className="truncate font-medium" title={book.title}>
@@ -56,9 +53,7 @@ export function BookSearchForm() {
       if (!query.trim()) return;
 
       startTransition(async () => {
-        const res = await fetch(
-          `/api/books/search?q=${encodeURIComponent(query.trim())}&limit=10`,
-        );
+        const res = await fetch(`/api/books/search?q=${encodeURIComponent(query.trim())}&limit=10`);
         if (!res.ok) {
           setResults([]);
           return;
@@ -67,7 +62,7 @@ export function BookSearchForm() {
         setResults(json.items ?? []);
       });
     },
-    [query],
+    [query]
   );
 
   return (
@@ -82,7 +77,7 @@ export function BookSearchForm() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Título, autor o ISBN…"
-          className="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-sakura-500"
+          className="focus-visible:ring-sakura-500 flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2"
           autoComplete="off"
         />
         <Button type="submit" disabled={isPending || !query.trim()}>
@@ -99,8 +94,8 @@ export function BookSearchForm() {
         >
           {Array.from({ length: 4 }).map((_, i) => (
             <li key={i}>
-              <div className="flex gap-4 rounded-xl p-4 ring-1 ring-foreground/10">
-                <Skeleton className="h-24 w-16 shrink-0 rounded-soft" />
+              <div className="ring-foreground/10 flex gap-4 rounded-xl p-4 ring-1">
+                <Skeleton className="rounded-soft h-24 w-16 shrink-0" />
                 <div className="flex flex-1 flex-col gap-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-3/4" />

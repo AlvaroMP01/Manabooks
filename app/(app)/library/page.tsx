@@ -1,19 +1,15 @@
 import { LibraryEmptyState } from "@/components/library/library-empty-state";
 import { LibraryEntryCard } from "@/components/library/library-entry-card";
 import { LibraryTabs } from "@/components/library/library-tabs";
-import { createClient } from "@/lib/supabase/server";
-import { rowToEntry } from "@/lib/library/types";
 import type { EntryStatus } from "@/lib/library/types";
+import { rowToEntry } from "@/lib/library/types";
+import { createClient } from "@/lib/supabase/server";
 
 const VALID_STATUSES = new Set<string>(["to_read", "reading", "read"]);
 
 type SearchParams = Promise<{ status?: string }>;
 
-export default async function LibraryPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function LibraryPage({ searchParams }: { searchParams: SearchParams }) {
   const { status } = await searchParams;
   const filter: EntryStatus | null =
     status && VALID_STATUSES.has(status) ? (status as EntryStatus) : null;
