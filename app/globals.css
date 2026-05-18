@@ -2,21 +2,21 @@
 
 @theme {
   /* ---------- MB palette (pixel-perfect from system.jsx) ---------- */
-  --color-mb-pink: #FF6FB5;
-  --color-mb-pink-deep: #FF3D9A;
-  --color-mb-pink-soft: #FFD0E7;
-  --color-mb-pink-bg: #FBD3E9;
-  --color-mb-cream: #FFF1F8;
-  --color-mb-purple: #B967FF;
-  --color-mb-purple-deep: #8B3FE0;
-  --color-mb-yellow: #FFD86B;
-  --color-mb-sky: #CDEDF6;
-  --color-mb-sky-deep: #A6DCE9;
-  --color-mb-mint: #B8F5D9;
-  --color-mb-ink: #3B1F47;
-  --color-mb-ink-soft: #6E4A7A;
-  --color-mb-white: #FFFCFE;
-  --color-mb-shadow: #7A2A60;
+  --color-mb-pink: #ff6fb5;
+  --color-mb-pink-deep: #ff3d9a;
+  --color-mb-pink-soft: #ffd0e7;
+  --color-mb-pink-bg: #fbd3e9;
+  --color-mb-cream: #fff1f8;
+  --color-mb-purple: #b967ff;
+  --color-mb-purple-deep: #8b3fe0;
+  --color-mb-yellow: #ffd86b;
+  --color-mb-sky: #cdedf6;
+  --color-mb-sky-deep: #a6dce9;
+  --color-mb-mint: #b8f5d9;
+  --color-mb-ink: #3b1f47;
+  --color-mb-ink-soft: #6e4a7a;
+  --color-mb-white: #fffcfe;
+  --color-mb-shadow: #7a2a60;
 
   /* ---------- shadcn semantic-token bridge (D6) ---------- */
   --color-primary: var(--color-mb-pink);
@@ -54,8 +54,15 @@
 
 /* MB twinkle — driven by class, NOT inline style (REQ-11) */
 @keyframes mb-twinkle {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  50%      { transform: scale(1.15) rotate(180deg); opacity: 0.85; }
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15) rotate(180deg);
+    opacity: 0.85;
+  }
 }
 
 .mb-twinkle {
@@ -64,7 +71,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mb-twinkle { animation: none; }
+  .mb-twinkle {
+    animation: none;
+  }
 }
 
 /* Body defaults — MB cream bg, ink text, Quicksand body font */
