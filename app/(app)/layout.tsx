@@ -1,20 +1,26 @@
 import { redirect } from "next/navigation";
 
-import { Header } from "@/components/header/header";
+import { MBBgDecor } from "@/components/mb/bg-decor";
+import { Sidebar } from "@/components/app-shell/sidebar";
+import { MobileTabs } from "@/components/app-shell/mobile-tabs";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
-
   if (!data?.claims) redirect("/login");
 
-  const email = typeof data.claims["email"] === "string" ? data.claims["email"] : null;
+  const email = (data.claims.email as string | undefined) ?? null;
 
   return (
-    <div className="bg-mb-cream min-h-dvh text-neutral-900">
-      <Header email={email} />
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+    <div className="relative min-h-dvh">
+      <MBBgDecor density="medium" palette="pink">
+        <div className="flex min-h-dvh">
+          <Sidebar email={email} />
+          <main className="flex-1 px-4 pt-6 pb-28 lg:px-8 lg:pb-10">{children}</main>
+        </div>
+        <MobileTabs />
+      </MBBgDecor>
     </div>
   );
 }
