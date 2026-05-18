@@ -1,16 +1,34 @@
 import "./globals.css";
 
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Bagel_Fat_One, Caveat, Pacifico, Quicksand } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const pacifico = Pacifico({
+  weight: "400",
   subsets: ["latin"],
+  display: "swap",
+  variable: "--font-pacifico",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bagel = Bagel_Fat_One({
+  weight: "400",
   subsets: ["latin"],
+  display: "swap",
+  variable: "--font-bagel-fat-one",
+});
+
+const quicksand = Quicksand({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin"],
+  display: "optional",
+  variable: "--font-quicksand",
+});
+
+const caveat = Caveat({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-caveat",
 });
 
 export const metadata: Metadata = {
@@ -18,13 +36,19 @@ export const metadata: Metadata = {
   description: "Tu registro de lectura personal",
 };
 
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#FBD3E9",
+};
+
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${pacifico.variable} ${bagel.variable} ${quicksand.variable} ${caveat.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
