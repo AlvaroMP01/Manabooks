@@ -1,12 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
+import { MBButton } from "@/components/mb/button";
 import { createClient } from "@/lib/supabase/client";
 
+/** LoginButton — Google OAuth CTA button for the login page. */
 export function LoginButton() {
+  const [pending, setPending] = useState(false);
   const supabase = createClient();
 
   function handleLogin() {
+    setPending(true);
     supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -16,8 +21,14 @@ export function LoginButton() {
   }
 
   return (
-    <Button aria-label="Continuar con Google" onClick={handleLogin}>
-      Continuar con Google
-    </Button>
+    <MBButton
+      color="pink"
+      size="lg"
+      onClick={handleLogin}
+      disabled={pending}
+      aria-label="Iniciar sesión con Google"
+    >
+      ✦ Iniciar con Google ✦
+    </MBButton>
   );
 }
