@@ -5,13 +5,9 @@ import { usePathname } from "next/navigation";
 
 import { MBSparkle } from "@/components/mb/sparkle";
 
-type Item = { label: string; href: string; icon: string };
-type Props = { items: Item[] };
+import { isActiveNavItem, type NavItem } from "./nav-utils";
 
-function isActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+type Props = { items: NavItem[] };
 
 /** MobileTabsClient — client bottom-tab nav with active state via usePathname. */
 export function MobileTabsClient({ items }: Props) {
@@ -35,7 +31,7 @@ export function MobileTabsClient({ items }: Props) {
         }}
       >
         {items.map((n) => {
-          const active = isActive(pathname, n.href);
+          const active = isActiveNavItem(pathname, n.href, items);
           return (
             <Link
               key={n.href}

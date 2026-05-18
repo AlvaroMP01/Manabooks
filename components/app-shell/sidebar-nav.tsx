@@ -5,13 +5,9 @@ import { usePathname } from "next/navigation";
 
 import { MBSparkle } from "@/components/mb/sparkle";
 
-type Item = { label: string; href: string; icon: string };
-type Props = { items: Item[] };
+import { isActiveNavItem, type NavItem } from "./nav-utils";
 
-function isActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+type Props = { items: NavItem[] };
 
 /** SidebarNav — client nav with usePathname-driven active state for desktop sidebar. */
 export function SidebarNav({ items }: Props) {
@@ -19,7 +15,7 @@ export function SidebarNav({ items }: Props) {
   return (
     <nav className="flex flex-col gap-1.5" aria-label="Navegación principal">
       {items.map((n) => {
-        const active = isActive(pathname, n.href);
+        const active = isActiveNavItem(pathname, n.href, items);
         return (
           <Link
             key={n.href}
