@@ -2,6 +2,15 @@
 
 Personal book tracking app — log what you read, filter by status, discover new books via Google Books.
 
+## Design system
+
+Palette: 15 MB tokens under `--color-mb-*` (pink, pink-deep, pink-soft, pink-bg, cream, purple, purple-deep, yellow, sky, sky-deep, mint, ink, ink-soft, white, shadow). All hex values sourced pixel-perfect from the Claude Design handoff.
+
+Fonts (via `next/font/google`): Pacifico (`--font-curly`), Bagel Fat One (`--font-sticker`), Quicksand (`--font-body`), Caveat (`--font-hand`).
+
+Primitives: `components/mb/` — 15 reusable MB components (coming in PR1b).
+App chrome: `components/app-shell/` — sidebar + mobile tabs (coming in PR2).
+
 ## Stack
 
 | Layer        | Choice                                           |
