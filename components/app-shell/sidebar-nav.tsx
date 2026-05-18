@@ -25,7 +25,7 @@ export function SidebarNav({ items }: Props) {
             key={n.href}
             href={n.href}
             aria-current={active ? "page" : undefined}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mb-pink-deep focus-visible:ring-offset-2 focus-visible:ring-offset-mb-cream"
+            className="focus-visible:ring-mb-pink-deep focus-visible:ring-offset-mb-cream focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             style={{
               display: "flex",
               alignItems: "center",

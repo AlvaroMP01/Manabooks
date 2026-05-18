@@ -17,14 +17,14 @@ export function Sidebar({ email }: Props) {
   const initial = email?.[0]?.toUpperCase() ?? "?";
   return (
     <aside
-      className="hidden lg:flex flex-col gap-6 bg-mb-cream relative z-10 px-[18px] pt-7 pb-6"
+      className="bg-mb-cream relative z-10 hidden flex-col gap-6 px-[18px] pt-7 pb-6 lg:flex"
       style={{
         width: 240,
         minHeight: "100dvh",
         borderRight: "2.5px solid #3B1F47",
       }}
     >
-      <div className="pl-2 pb-2">
+      <div className="pb-2 pl-2">
         <MBWordmark size={32} sub={false} />
         <div
           className="mt-1.5 pl-0.5"
@@ -68,10 +68,15 @@ export function Sidebar({ email }: Props) {
             >
               {initial}
             </div>
-            <div className="leading-tight overflow-hidden">
+            <div className="overflow-hidden leading-tight">
               <div
                 className="truncate"
-                style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 13, color: "#3B1F47" }}
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  color: "#3B1F47",
+                }}
               >
                 {email ?? "Invitada"}
               </div>

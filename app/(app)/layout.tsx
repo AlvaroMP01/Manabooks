@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { MBBgDecor } from "@/components/mb/bg-decor";
-import { Sidebar } from "@/components/app-shell/sidebar";
 import { MobileTabs } from "@/components/app-shell/mobile-tabs";
+import { Sidebar } from "@/components/app-shell/sidebar";
+import { MBBgDecor } from "@/components/mb/bg-decor";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {

@@ -19,7 +19,7 @@ export function MobileTabsClient({ items }: Props) {
   return (
     <nav
       aria-label="Navegación móvil"
-      className="lg:hidden fixed left-3.5 right-3.5 z-30 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
+      className="fixed right-3.5 left-3.5 z-30 pb-[max(env(safe-area-inset-bottom),0.5rem)] lg:hidden"
       style={{ bottom: 14 }}
     >
       <div
@@ -41,7 +41,7 @@ export function MobileTabsClient({ items }: Props) {
               key={n.href}
               href={n.href}
               aria-current={active ? "page" : undefined}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mb-pink-deep focus-visible:ring-offset-2 focus-visible:ring-offset-mb-cream"
+              className="focus-visible:ring-mb-pink-deep focus-visible:ring-offset-mb-cream focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
               style={{
                 flex: 1,
                 display: "flex",

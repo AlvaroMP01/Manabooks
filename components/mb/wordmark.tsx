@@ -8,7 +8,14 @@ type Props = {
 
 export function MBWordmark({ size = 36, color = "#FF3D9A", sub = true }: Props) {
   return (
-    <div style={{ position: "relative", display: "inline-block", lineHeight: 1, paddingTop: size * 0.5 }}>
+    <div
+      style={{
+        position: "relative",
+        display: "inline-block",
+        lineHeight: 1,
+        paddingTop: size * 0.5,
+      }}
+    >
       {/* crown */}
       <svg
         aria-hidden="true"
