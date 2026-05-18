@@ -21,10 +21,10 @@ export function AccountMenu({ email }: { email: string | null }) {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Menú de cuenta"
-        className="focus-visible:ring-sakura-500 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="focus-visible:ring-mb-pink-deep rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       >
         <Avatar>
-          <AvatarFallback className="bg-sakura-100 text-sakura-700 font-semibold">
+          <AvatarFallback className="bg-mb-purple text-mb-white font-semibold">
             {initial}
           </AvatarFallback>
         </Avatar>
@@ -32,7 +32,7 @@ export function AccountMenu({ email }: { email: string | null }) {
       <DropdownMenuContent align="end" className="w-60">
         <div className="flex items-center gap-3 px-2 py-2">
           <Avatar className="size-9">
-            <AvatarFallback className="bg-sakura-100 text-sakura-700 text-sm font-semibold">
+            <AvatarFallback className="bg-mb-purple text-mb-white text-sm font-semibold">
               {initial}
             </AvatarFallback>
           </Avatar>

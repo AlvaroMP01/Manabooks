@@ -15,9 +15,9 @@ const STATUS_LABELS: Record<EntryStatus, string> = {
 };
 
 const STATUS_ACCENT: Record<EntryStatus, string> = {
-  to_read: "text-lavender-700 bg-lavender-100",
-  reading: "text-sakura-700 bg-sakura-100",
-  read: "text-mint-700 bg-mint-100",
+  to_read: "text-mb-ink bg-mb-sky",
+  reading: "text-mb-pink-deep bg-mb-pink-soft",
+  read: "text-mb-ink bg-mb-mint",
 };
 
 export default async function ProfilePage() {
@@ -43,7 +43,7 @@ export default async function ProfilePage() {
 
       <header className="flex items-center gap-6">
         <Avatar className="size-20">
-          <AvatarFallback className="bg-sakura-100 text-sakura-700 text-3xl font-semibold">
+          <AvatarFallback className="bg-mb-purple text-mb-white text-3xl font-semibold">
             {initial}
           </AvatarFallback>
         </Avatar>

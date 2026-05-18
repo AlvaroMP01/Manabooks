@@ -7,7 +7,7 @@ export default function HomePage() {
       <p className="mt-4 text-neutral-500">Tu registro de lectura personal.</p>
       <Link
         href="/library"
-        className="bg-sakura-500 hover:bg-sakura-700 mt-8 inline-block rounded-full px-6 py-3 font-medium text-white transition-colors"
+        className="bg-mb-pink hover:bg-mb-pink-deep mt-8 inline-block rounded-full px-6 py-3 font-medium text-white transition-colors"
       >
         Ver mi biblioteca
       </Link>
