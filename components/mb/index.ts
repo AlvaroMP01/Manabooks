@@ -13,3 +13,4 @@ export { MBProgress } from "./progress";
 export { MBSparkle } from "./sparkle";
 export { MBStatus } from "./status";
 export { MBSticker } from "./sticker";
+export { MBWordmark } from "./wordmark";
