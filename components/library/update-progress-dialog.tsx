@@ -118,7 +118,38 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange }: Props) {
             </DialogHeader>
 
             <div className="flex flex-col gap-4">
-              {/* Numeric input — string-backed so empty / partial input never produces NaN */}
+              {/* Total pages FIRST — establishes the range for current page + slider */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="progress-total-pages"
+                  style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#3B1F47" }}
+                >
+                  Total de páginas
+                </label>
+                <input
+                  id="progress-total-pages"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  value={totalPagesStr}
+                  placeholder="ej. 320"
+                  onChange={(e) => setTotalPagesStr(e.target.value)}
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: 15,
+                    color: "#3B1F47",
+                    border: "2px solid #3B1F47",
+                    borderRadius: 8,
+                    padding: "8px 12px",
+                    width: "100%",
+                    boxShadow: "2px 2px 0 #3B1F47",
+                    outline: "none",
+                    background: "#FFFCFE",
+                  }}
+                />
+              </div>
+
+              {/* Current page input — string-backed so empty / partial input never produces NaN */}
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="progress-current-page"
@@ -150,8 +181,8 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange }: Props) {
                 />
               </div>
 
-              {/* Slider — only when totalPages is known and > 0 */}
-              {totalPages !== null && totalPages > 0 && (
+              {/* Slider — visual scrubbing once total is known */}
+              {totalPages !== null && totalPages > 0 ? (
                 <div className="flex flex-col gap-1">
                   <input
                     aria-label={`Desliza para ajustar la página actual (máximo ${totalPages})`}
@@ -173,38 +204,18 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange }: Props) {
                     <span>{totalPages}</span>
                   </div>
                 </div>
-              )}
-
-              {/* Total pages input — always editable so user can correct Google Books pageCount */}
-              <div className="flex flex-col gap-1.5">
-                <label
-                  htmlFor="progress-total-pages"
-                  style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#3B1F47" }}
-                >
-                  Total de páginas {totalPages === null ? "(opcional)" : ""}
-                </label>
-                <input
-                  id="progress-total-pages"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  value={totalPagesStr}
-                  placeholder="ej. 320"
-                  onChange={(e) => setTotalPagesStr(e.target.value)}
+              ) : (
+                <p
                   style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: 15,
-                    color: "#3B1F47",
-                    border: "2px solid #3B1F47",
-                    borderRadius: 8,
-                    padding: "8px 12px",
-                    width: "100%",
-                    boxShadow: "2px 2px 0 #3B1F47",
-                    outline: "none",
-                    background: "#FFFCFE",
+                    fontFamily: "var(--font-hand)",
+                    fontSize: 14,
+                    color: "#8B3FE0",
+                    margin: 0,
                   }}
-                />
-              </div>
+                >
+                  Indica el total de páginas arriba para ver el slider ✦
+                </p>
+              )}
             </div>
 
             <DialogFooter>
