@@ -11,22 +11,20 @@ export function LibraryEmptyState() {
     <div className="relative grid place-items-center gap-4 py-16 text-center">
       <MBSparkle
         size={32}
-        aria-hidden="true"
         style={{ position: "absolute", top: 0, left: "33%" }}
       />
       <MBButterfly
         size={48}
-        aria-hidden="true"
         style={{ position: "absolute", top: 8, right: "30%", transform: "rotate(-12deg)" }}
       />
-      <MBHeart
-        size={24}
+      <span
         aria-hidden="true"
         style={{ position: "absolute", bottom: 24, left: "20%" }}
-      />
+      >
+        <MBHeart size={24} />
+      </span>
       <MBSparkle
         size={20}
-        aria-hidden="true"
         style={{ position: "absolute", bottom: 16, right: "25%" }}
       />
       <h2
