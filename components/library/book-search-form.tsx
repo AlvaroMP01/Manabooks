@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 import { AddToLibraryDialog } from "@/components/library/add-to-library-dialog";
 import { MBBookCover } from "@/components/mb/book-cover";
@@ -106,21 +106,19 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
     });
   }, []);
 
-  const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      runSearch(query);
-    },
-    [query, runSearch]
-  );
-
   useEffect(() => {
     if (initialQuery) runSearch(initialQuery);
   }, [initialQuery, runSearch]);
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={handleSubmit} className="flex gap-3">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          runSearch(query);
+        }}
+        className="flex gap-3"
+      >
         <label htmlFor="book-search-input" className="sr-only">
           Buscar libros
         </label>
