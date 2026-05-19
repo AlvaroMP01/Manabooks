@@ -27,7 +27,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             filter: "drop-shadow(3px 4px 0 #3B1F47)",
           }}
         >
-          buscar libros
+          Buscar libros
         </h1>
         <p
           style={{
@@ -42,7 +42,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </header>
       <div className="self-start">
         <MBSticker color="#FFD86B" rotate={-3} fontSize={14} padding="6px 14px">
-          encuentra tu próxima obsesión
+          Encuentra tu próxima obsesión
         </MBSticker>
       </div>
       <BookSearchForm key={initialQuery} initialQuery={initialQuery} />

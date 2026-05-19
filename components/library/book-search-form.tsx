@@ -142,7 +142,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
           }}
         />
         <MBButton type="submit" color="purple" size="md" disabled={isPending || !query.trim()}>
-          buscar ✦
+          Buscar ✦
         </MBButton>
       </form>
 

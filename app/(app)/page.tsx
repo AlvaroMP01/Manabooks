@@ -30,7 +30,7 @@ export default async function HomePage() {
             filter: "drop-shadow(3px 4px 0 #3B1F47)",
           }}
         >
-          hola, {name} ✦
+          Hola, {name} ✦
         </h1>
         <p
           style={{
@@ -59,12 +59,12 @@ export default async function HomePage() {
         <div className="flex flex-wrap gap-3">
           <Link href="/library/search">
             <MBButton color="pink" size="md">
-              buscar libros ✦
+              Buscar libros ✦
             </MBButton>
           </Link>
           <Link href="/library">
             <MBButton color="purple" size="md">
-              → ir a mi biblioteca
+              → Ir a mi biblioteca
             </MBButton>
           </Link>
         </div>

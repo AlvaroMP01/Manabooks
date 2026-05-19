@@ -72,7 +72,7 @@ export function AddToLibraryDialog({ book }: Props) {
           whiteSpace: "nowrap",
         }}
       >
-        agregar ✦
+        Agregar ✦
       </DialogTrigger>
 
       <DialogContent>
@@ -129,7 +129,7 @@ export function AddToLibraryDialog({ book }: Props) {
               onClick={() => setOpen(false)}
               disabled={isPending}
             >
-              cancelar
+              Cancelar
             </MBButton>
             <MBButton
               type="button"
@@ -138,7 +138,7 @@ export function AddToLibraryDialog({ book }: Props) {
               onClick={handleSubmit}
               disabled={isPending}
             >
-              {isPending ? "agregando…" : "agregar ✦"}
+              {isPending ? "Agregando…" : "Agregar ✦"}
             </MBButton>
           </div>
         </div>

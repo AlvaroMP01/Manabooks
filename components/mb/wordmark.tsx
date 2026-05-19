@@ -48,7 +48,7 @@ export function MBWordmark({ size = 36, color = "#FF3D9A", sub = true }: Props) 
           filter: `drop-shadow(2px 3px 0 #3B1F47)`,
         }}
       >
-        manabooks
+        Manabooks
       </span>
       {sub && (
         <div
@@ -62,7 +62,7 @@ export function MBWordmark({ size = 36, color = "#FF3D9A", sub = true }: Props) 
             paddingRight: 4,
           }}
         >
-          · your reading era ·
+          · Your Reading Era ·
         </div>
       )}
     </div>

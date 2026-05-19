@@ -17,14 +17,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="relative min-h-dvh">
-      <MBBgDecor density="medium" palette="pink">
-        <div className="flex min-h-dvh">
-          <Sidebar displayName={displayName} email={email} />
-          <main className="flex-1 px-4 pt-6 pb-28 lg:px-8 lg:pb-10">{children}</main>
-        </div>
-        <MobileTabs />
-        <Toaster />
-      </MBBgDecor>
+      {/* Viewport-fixed decorative background so the document can scroll freely. */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <MBBgDecor density="medium" palette="pink" />
+      </div>
+      {/* Content layer — normal document flow, scrolls naturally. */}
+      <div className="relative z-10 flex min-h-dvh">
+        <Sidebar displayName={displayName} email={email} />
+        <main className="flex-1 px-4 pt-6 pb-28 lg:px-8 lg:pb-10">{children}</main>
+      </div>
+      <MobileTabs />
+      <Toaster />
     </div>
   );
 }
