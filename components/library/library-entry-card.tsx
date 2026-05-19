@@ -2,6 +2,7 @@ import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
 import { MBStatus } from "@/components/mb/status";
 import { MBSticker } from "@/components/mb/sticker";
+import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import type { LibraryEntry } from "@/lib/library/types";
 import { dbStatusToMBKey } from "@/lib/library/utils";
 
@@ -57,7 +58,10 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
           </p>
         )}
       </div>
-      <MBStatus status={mbStatus} />
+      <div className="flex w-full items-center justify-between gap-2">
+        <MBStatus status={mbStatus} />
+        <EntryActionsMenu entry={entry} />
+      </div>
     </MBCard>
   );
 }
