@@ -12,13 +12,18 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 describe("Home page", () => {
-  it("renders the manabooks heading", async () => {
+  it("renders the greeting headline", async () => {
     render(await Home());
-    expect(screen.getByRole("heading", { name: /manabooks/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /hola/i })).toBeInTheDocument();
   });
 
-  it("renders a library link when authenticated", async () => {
+  it("renders a link to the library search", async () => {
     render(await Home());
-    expect(screen.getByRole("link", { name: /ver mi biblioteca/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /buscar libros/i })).toBeInTheDocument();
+  });
+
+  it("renders a link to the library", async () => {
+    render(await Home());
+    expect(screen.getByRole("link", { name: /mi biblioteca/i })).toBeInTheDocument();
   });
 });
