@@ -60,6 +60,8 @@ export async function searchBooks(
   const params = new URLSearchParams({
     q: query,
     maxResults: String(limit),
+    orderBy: "relevance",
+    printType: "books",
     key: process.env.GOOGLE_BOOKS_API_KEY!,
   });
 

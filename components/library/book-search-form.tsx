@@ -96,7 +96,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
     if (!trimmed) return;
 
     startTransition(async () => {
-      const res = await fetch(`/api/books/search?q=${encodeURIComponent(trimmed)}&limit=10`);
+      const res = await fetch(`/api/books/search?q=${encodeURIComponent(trimmed)}&limit=40`);
       if (!res.ok) {
         setResults([]);
         return;
