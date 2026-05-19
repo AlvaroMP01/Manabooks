@@ -9,6 +9,7 @@ export const addToLibrarySchema = z.object({
   authors: z.array(z.string()).default([]),
   thumbnailUrl: z.string().url().nullable().optional(),
   status: entryStatusSchema.optional(),
+  totalPages: z.number().int().min(1).nullable().optional(),
 });
 export type AddToLibraryInput = z.infer<typeof addToLibrarySchema>;
 
@@ -22,3 +23,15 @@ export const deleteEntrySchema = z.object({
   id: z.string().uuid(),
 });
 export type DeleteEntryInput = z.infer<typeof deleteEntrySchema>;
+
+export const updateProgressSchema = z
+  .object({
+    id: z.string().uuid(),
+    currentPage: z.number().int().min(0),
+    totalPages: z.number().int().min(1).nullable().optional(),
+  })
+  .refine((data) => data.totalPages == null || data.currentPage <= data.totalPages, {
+    message: "La página actual no puede superar el total de páginas",
+    path: ["currentPage"],
+  });
+export type UpdateProgressInput = z.infer<typeof updateProgressSchema>;
