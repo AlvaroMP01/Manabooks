@@ -11,13 +11,13 @@
 import { expect, test } from "@playwright/test";
 
 // All tests in this file are skipped in CI.
-// Remove `.skip` and configure `storageState` for local manual runs.
-test.skip(
-  () => !process.env.E2E_RUN_MUTATIONS,
-  "Library mutations tests require E2E_RUN_MUTATIONS=1 and a running local stack"
-);
-
+// Remove the skip flag and configure `storageState` for local manual runs.
 test.describe("Library mutations happy path", () => {
+  test.skip(
+    !process.env.E2E_RUN_MUTATIONS,
+    "Library mutations tests require E2E_RUN_MUTATIONS=1 and a running local stack"
+  );
+
   test("add book to library, change status, then delete", async ({ page }) => {
     // 1. Navigate to search page (assumes already authenticated via storageState)
     await page.goto("/library/search");
