@@ -10,11 +10,12 @@ const NAV_ITEMS = [
   { label: "Mi perfil", href: "/profile", icon: "☻" },
 ];
 
-type Props = { email: string | null };
+type Props = { displayName: string | null; email: string | null };
 
 /** Sidebar — server component desktop sidebar with brand, nav, and user card. Hidden below lg. */
-export function Sidebar({ email }: Props) {
-  const initial = email?.[0]?.toUpperCase() ?? "?";
+export function Sidebar({ displayName, email }: Props) {
+  const label = displayName ?? email ?? "Invitada";
+  const initial = (displayName ?? email ?? "?")[0]!.toUpperCase();
   return (
     <aside
       className="bg-mb-cream relative z-10 hidden flex-col gap-6 px-[18px] pt-7 pb-6 lg:flex"
@@ -77,8 +78,9 @@ export function Sidebar({ email }: Props) {
                   fontSize: 13,
                   color: "#3B1F47",
                 }}
+                title={email ?? undefined}
               >
-                {email ?? "Invitada"}
+                {label}
               </div>
               <div style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#6E4A7A" }}>
                 @manabooks

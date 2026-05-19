@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { extractDisplayName, extractEmail } from "@/lib/auth/display-name";
 import type { EntryStatus } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,9 +24,10 @@ const STATUS_ACCENT: Record<EntryStatus, string> = {
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: authData } = await supabase.auth.getClaims();
-  const email = typeof authData?.claims?.["email"] === "string" ? authData.claims["email"] : null;
-  const initial = (email ?? "?").charAt(0).toUpperCase();
-  const displayEmail = email ?? "Sin email";
+  const displayName = extractDisplayName(authData?.claims);
+  const email = extractEmail(authData?.claims);
+  const headline = displayName ?? email ?? "Tu cuenta";
+  const initial = headline.charAt(0).toUpperCase();
 
   const { data: rows } = await supabase.from("library_entries").select("status");
   const counts: StatusCounts = {
@@ -51,10 +53,15 @@ export default async function ProfilePage() {
           <p className="text-sm text-neutral-500">Sesión iniciada como</p>
           <p
             className="truncate text-2xl font-semibold tracking-tight text-neutral-900"
-            title={displayEmail}
+            title={email ?? undefined}
           >
-            {displayEmail}
+            {headline}
           </p>
+          {displayName && email && (
+            <p className="truncate text-sm text-neutral-500" title={email}>
+              {email}
+            </p>
+          )}
         </div>
       </header>
 
