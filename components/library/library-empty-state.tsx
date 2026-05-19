@@ -32,7 +32,7 @@ export function LibraryEmptyState() {
         tu biblioteca te espera ✦
       </h2>
       <p style={{ fontFamily: "var(--font-hand)", fontSize: 20, color: "#3B1F47" }}>
-        Empezá agregando el primer libro de tu era lectora.
+        Empieza añadiendo el primer libro de tu era lectora.
       </p>
       <Link href="/library/search">
         <MBButton color="pink" size="lg">

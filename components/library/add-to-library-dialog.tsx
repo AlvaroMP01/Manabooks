@@ -50,7 +50,7 @@ export function AddToLibraryDialog({ book }: Props) {
         setOpen(false);
         toast.warning("Este libro ya está en tu biblioteca");
       } else {
-        toast.error("No se pudo agregar el libro. Intentá de nuevo.");
+        toast.error("No se pudo añadir el libro. Inténtalo de nuevo.");
       }
     });
   }

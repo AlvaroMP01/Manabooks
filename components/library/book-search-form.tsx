@@ -153,7 +153,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
           className="text-center"
           style={{ fontFamily: "var(--font-hand)", fontSize: 18, color: "#3B1F47" }}
         >
-          Escribí el nombre de un libro para buscarlo
+          Escribe el nombre de un libro para buscarlo
         </p>
       )}
 

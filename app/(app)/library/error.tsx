@@ -10,7 +10,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
         ups ✦
       </MBSticker>
       <p style={{ fontFamily: "var(--font-hand)", fontSize: 22, color: "#3B1F47" }}>
-        algo se quemó en la imprenta, intentá de nuevo.
+        Algo se quemó en la imprenta, inténtalo de nuevo.
       </p>
       <MBButton color="pink" onClick={reset}>
         reintentar
