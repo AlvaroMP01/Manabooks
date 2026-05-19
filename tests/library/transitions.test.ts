@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { computeTimestamps } from "@/lib/library/transitions";
+import { computeProgressTransition, computeTimestamps } from "@/lib/library/transitions";
 
 const FIXED_TS = "2026-01-01T00:00:00.000Z";
 
@@ -77,5 +77,93 @@ describe("computeTimestamps", () => {
     });
     expect(result.startedAt).toBeNull();
     expect(result.finishedAt).toBeNull();
+  });
+});
+
+const FIXED_TS = "2026-01-01T00:00:00.000Z";
+
+describe("computeProgressTransition", () => {
+  it("to_read + currentPage=0 → no auto-transition, no prompt", () => {
+    const result = computeProgressTransition({
+      prevStatus: "to_read",
+      currentPage: 0,
+      totalPages: 200,
+      currentStartedAt: null,
+    });
+    expect(result.autoStatus).toBeNull();
+    expect(result.promptComplete).toBe(false);
+  });
+
+  it("to_read + currentPage=5 + no existing startedAt → auto-transition to reading, sets startedAt to now", () => {
+    const before = Date.now();
+    const result = computeProgressTransition({
+      prevStatus: "to_read",
+      currentPage: 5,
+      totalPages: 200,
+      currentStartedAt: null,
+    });
+    const after = Date.now();
+    expect(result.autoStatus).toBe("reading");
+    expect(result.promptComplete).toBe(false);
+    expect(result.startedAt).not.toBeNull();
+    const ts = new Date(result.startedAt!).getTime();
+    expect(ts).toBeGreaterThanOrEqual(before);
+    expect(ts).toBeLessThanOrEqual(after);
+  });
+
+  it("to_read + currentPage=5 + existing startedAt → auto-transition to reading, preserves existing startedAt", () => {
+    const result = computeProgressTransition({
+      prevStatus: "to_read",
+      currentPage: 5,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+    });
+    expect(result.autoStatus).toBe("reading");
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.promptComplete).toBe(false);
+  });
+
+  it("reading + currentPage=50, totalPages=200 → no auto-transition, no prompt", () => {
+    const result = computeProgressTransition({
+      prevStatus: "reading",
+      currentPage: 50,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+    });
+    expect(result.autoStatus).toBeNull();
+    expect(result.promptComplete).toBe(false);
+  });
+
+  it("reading + currentPage=totalPages → no auto-transition, promptComplete=true", () => {
+    const result = computeProgressTransition({
+      prevStatus: "reading",
+      currentPage: 200,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+    });
+    expect(result.autoStatus).toBeNull();
+    expect(result.promptComplete).toBe(true);
+  });
+
+  it("read + currentPage=0 → no reverse transition, no prompt", () => {
+    const result = computeProgressTransition({
+      prevStatus: "read",
+      currentPage: 0,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+    });
+    expect(result.autoStatus).toBeNull();
+    expect(result.promptComplete).toBe(false);
+  });
+
+  it("reading + totalPages=null + currentPage=999 → promptComplete=false (null totalPages never triggers prompt)", () => {
+    const result = computeProgressTransition({
+      prevStatus: "reading",
+      currentPage: 999,
+      totalPages: null,
+      currentStartedAt: FIXED_TS,
+    });
+    expect(result.promptComplete).toBe(false);
+    expect(result.autoStatus).toBeNull();
   });
 });
