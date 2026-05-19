@@ -56,7 +56,7 @@ describe("addToLibrarySchema", () => {
   });
 
   it("rejects missing googleVolumeId", () => {
-    const { googleVolumeId: _, ...rest } = valid;
+    const rest = { title: valid.title, authors: valid.authors, thumbnailUrl: valid.thumbnailUrl };
     expect(addToLibrarySchema.safeParse(rest).success).toBe(false);
   });
 
@@ -65,7 +65,11 @@ describe("addToLibrarySchema", () => {
   });
 
   it("rejects missing title", () => {
-    const { title: _, ...rest } = valid;
+    const rest = {
+      googleVolumeId: valid.googleVolumeId,
+      authors: valid.authors,
+      thumbnailUrl: valid.thumbnailUrl,
+    };
     expect(addToLibrarySchema.safeParse(rest).success).toBe(false);
   });
 

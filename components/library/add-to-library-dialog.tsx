@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import { addToLibrary } from "@/app/(app)/library/_actions";
 import { MBButton } from "@/components/mb/button";
 import {
   Dialog,
@@ -18,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addToLibrary } from "@/app/(app)/library/_actions";
 import type { Book } from "@/lib/google-books/types";
 import type { EntryStatusInput } from "@/lib/validation/library";
 
@@ -112,10 +112,7 @@ export function AddToLibraryDialog({ book }: Props) {
             >
               Estado inicial
             </label>
-            <Select
-              value={status}
-              onValueChange={(val) => setStatus(val as EntryStatusInput)}
-            >
+            <Select value={status} onValueChange={(val) => setStatus(val as EntryStatusInput)}>
               <SelectTrigger id="add-dialog-status" className="w-full">
                 <SelectValue />
               </SelectTrigger>

@@ -1,8 +1,8 @@
+import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
 import { MBStatus } from "@/components/mb/status";
 import { MBSticker } from "@/components/mb/sticker";
-import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import type { LibraryEntry } from "@/lib/library/types";
 import { dbStatusToMBKey } from "@/lib/library/utils";
 

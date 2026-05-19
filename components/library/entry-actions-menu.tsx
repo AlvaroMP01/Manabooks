@@ -1,9 +1,10 @@
 "use client";
 
+import { MoreHorizontalIcon } from "lucide-react";
 import { useOptimistic, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontalIcon } from "lucide-react";
 
+import { deleteEntry, updateEntryStatus } from "@/app/(app)/library/_actions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteEntry, updateEntryStatus } from "@/app/(app)/library/_actions";
 import type { LibraryEntry } from "@/lib/library/types";
 import type { EntryStatus } from "@/lib/library/types";
 
