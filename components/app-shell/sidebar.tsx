@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { MBButton } from "@/components/mb/button";
 import { MBWordmark } from "@/components/mb/wordmark";
 
@@ -25,7 +27,11 @@ export function Sidebar({ displayName, email }: Props) {
         borderRight: "2.5px solid #3B1F47",
       }}
     >
-      <div className="pb-2 pl-2">
+      <Link
+        href="/"
+        aria-label="Ir a inicio"
+        className="focus-visible:ring-mb-pink-deep focus-visible:ring-offset-mb-cream block rounded-md pb-2 pl-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+      >
         <MBWordmark size={32} sub={false} />
         <div
           className="mt-1.5 pl-0.5"
@@ -38,7 +44,7 @@ export function Sidebar({ displayName, email }: Props) {
         >
           YOUR · READING · ERA
         </div>
-      </div>
+      </Link>
 
       <SidebarNav items={NAV_ITEMS} />
 

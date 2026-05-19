@@ -30,17 +30,17 @@ export default async function HomePage() {
             filter: "drop-shadow(3px 4px 0 #3B1F47)",
           }}
         >
-          hola, {name} ✦
+          Hola, {name} ✦
         </h1>
         <p
           style={{
             fontFamily: "var(--font-hand)",
             fontSize: 22,
             color: "#8B3FE0",
-            marginTop: 8,
+            marginTop: 12,
           }}
         >
-          bienvenida a tu rincón girlypop ♡
+          Bienvenida a tu rincón girlypop ♡
         </p>
       </header>
 
@@ -53,18 +53,18 @@ export default async function HomePage() {
             margin: 0,
           }}
         >
-          empezá agregando libros a tu biblioteca, marcalos como leídos, en lectura o por leer. Las
-          features de progreso, rating y notas llegan pronto ✦
+          Empieza añadiendo libros a tu biblioteca y márcalos como leídos, en lectura o por leer.
+          Las funcionalidades de progreso, valoración y notas llegan pronto ✦
         </p>
         <div className="flex flex-wrap gap-3">
           <Link href="/library/search">
             <MBButton color="pink" size="md">
-              buscar libros ✦
+              Buscar libros ✦
             </MBButton>
           </Link>
           <Link href="/library">
             <MBButton color="purple" size="md">
-              → ir a mi biblioteca
+              → Ir a mi biblioteca
             </MBButton>
           </Link>
         </div>
@@ -76,7 +76,7 @@ export default async function HomePage() {
             margin: 0,
           }}
         >
-          psst, podés sumar tu primer libro buscándolo arriba ✦
+          Pst, puedes añadir tu primer libro buscándolo arriba ✦
         </p>
       </MBCard>
 

@@ -1,3 +1,4 @@
+import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
 import { MBStatus } from "@/components/mb/status";
@@ -31,6 +32,7 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
       <MBBookCover
         title={entry.title}
         author={entry.authors[0] ?? ""}
+        thumbnail={entry.thumbnailUrl}
         width={120}
         height={180}
         tilt={-2}
@@ -57,7 +59,10 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
           </p>
         )}
       </div>
-      <MBStatus status={mbStatus} />
+      <div className="flex w-full items-center justify-between gap-2">
+        <MBStatus status={mbStatus} />
+        <EntryActionsMenu entry={entry} />
+      </div>
     </MBCard>
   );
 }
