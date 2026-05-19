@@ -1,4 +1,6 @@
 import { BookSearchForm } from "@/components/library/book-search-form";
+import { MBSparkle } from "@/components/mb/sparkle";
+import { MBSticker } from "@/components/mb/sticker";
 
 type SearchPageProps = {
   searchParams: Promise<{ q?: string | string[] }>;
@@ -10,11 +12,38 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const initialQuery = rawQuery?.trim() ?? "";
 
   return (
-    <section aria-labelledby="search-heading" className="space-y-6">
-      <h1 id="search-heading" className="text-2xl font-semibold">
-        Buscar libros
-      </h1>
+    <div className="flex flex-col gap-6">
+      <header className="relative">
+        <MBSparkle size={24} style={{ position: "absolute", top: -6, left: 164 }} />
+        <h1
+          style={{
+            fontFamily: "var(--font-curly)",
+            fontSize: 48,
+            color: "#FF3D9A",
+            margin: 0,
+            lineHeight: 0.95,
+            WebkitTextStroke: "2.2px #3B1F47",
+            paintOrder: "stroke fill",
+            filter: "drop-shadow(3px 4px 0 #3B1F47)",
+          }}
+        >
+          buscar libros
+        </h1>
+        <p
+          style={{
+            fontFamily: "var(--font-hand)",
+            fontSize: 20,
+            color: "#8B3FE0",
+            marginTop: 8,
+          }}
+        >
+          buscá tu próxima lectura en Google Books ✿
+        </p>
+      </header>
+      <MBSticker color="#FFD86B" rotate={-3} fontSize={14} padding="6px 14px">
+        encontrá tu próxima obsesión
+      </MBSticker>
       <BookSearchForm key={initialQuery} initialQuery={initialQuery} />
-    </section>
+    </div>
   );
 }
