@@ -80,8 +80,6 @@ describe("computeTimestamps", () => {
   });
 });
 
-const FIXED_TS = "2026-01-01T00:00:00.000Z";
-
 describe("computeProgressTransition", () => {
   it("to_read + currentPage=0 → no auto-transition, no prompt", () => {
     const result = computeProgressTransition({

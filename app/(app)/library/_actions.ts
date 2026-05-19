@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import type { Database } from "@/lib/database.types";
 import type { ActionResult } from "@/lib/library/action-result";
 import { computeProgressTransition, computeTimestamps } from "@/lib/library/transitions";
 import type { EntryStatus } from "@/lib/library/types";
@@ -130,15 +131,16 @@ export async function updateProgress(
     currentStartedAt: current.started_at,
   });
 
-  // 6. Build a single UPDATE payload — only touch status/started_at when auto-transition fires.
-  const update: Record<string, unknown> = {
+  // 6. Build a single typed UPDATE payload — only touch status/started_at when auto-transition fires.
+  type LibraryEntriesUpdate = Database["public"]["Tables"]["library_entries"]["Update"];
+
+  const update: LibraryEntriesUpdate = {
     current_page: parsed.data.currentPage,
     total_pages: effectiveTotalPages,
+    ...(transition.autoStatus !== null
+      ? { status: transition.autoStatus, started_at: transition.startedAt }
+      : {}),
   };
-  if (transition.autoStatus !== null) {
-    update.status = transition.autoStatus;
-    update.started_at = transition.startedAt;
-  }
 
   const { error: updateError } = await supabase
     .from("library_entries")
