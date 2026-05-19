@@ -54,7 +54,7 @@ export default async function HomePage() {
           }}
         >
           Empieza añadiendo libros a tu biblioteca y márcalos como leídos, en lectura o por leer.
-          Las funcionalidades de progreso, valoración y notas llegan pronto ✦
+          Las funcionalidades de valoración y notas llegan pronto ✦
         </p>
         <div className="flex flex-wrap gap-3">
           <Link href="/library/search">
