@@ -12,13 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import type { Book } from "@/lib/google-books/types";
 import type { EntryStatusInput } from "@/lib/validation/library";
 
@@ -53,6 +47,7 @@ export function AddToLibraryDialog({ book }: Props) {
         setOpen(false);
         toast.success("¡Agregado a tu biblioteca! ✦");
       } else if (result.code === "already_added") {
+        setOpen(false);
         toast.warning("Este libro ya está en tu biblioteca");
       } else {
         toast.error("No se pudo agregar el libro. Intentá de nuevo.");
@@ -114,7 +109,7 @@ export function AddToLibraryDialog({ book }: Props) {
             </label>
             <Select value={status} onValueChange={(val) => setStatus(val as EntryStatusInput)}>
               <SelectTrigger id="add-dialog-status" className="w-full">
-                <SelectValue />
+                <span>{STATUS_OPTIONS.find((opt) => opt.value === status)?.label}</span>
               </SelectTrigger>
               <SelectContent>
                 {STATUS_OPTIONS.map((opt) => (
