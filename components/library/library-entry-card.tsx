@@ -32,6 +32,7 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
       <MBBookCover
         title={entry.title}
         author={entry.authors[0] ?? ""}
+        thumbnail={entry.thumbnailUrl}
         width={120}
         height={180}
         tilt={-2}

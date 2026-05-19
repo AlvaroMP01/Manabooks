@@ -54,7 +54,7 @@ function mapVolume(raw: RawVolume): Book {
 
 export async function searchBooks(
   query: string,
-  opts: { limit?: number } = {}
+  opts: { limit?: number; lang?: string } = {}
 ): Promise<BooksSearchResult> {
   const limit = Math.min(Math.max(opts.limit ?? 10, 1), 40);
   const params = new URLSearchParams({
@@ -64,6 +64,7 @@ export async function searchBooks(
     printType: "books",
     key: process.env.GOOGLE_BOOKS_API_KEY!,
   });
+  if (opts.lang) params.set("langRestrict", opts.lang);
 
   const response = await fetch(`${BASE_URL}/volumes?${params.toString()}`, {
     next: { revalidate: 86400 },
