@@ -32,8 +32,8 @@ function BookSearchSkeleton() {
                 className="animate-pulse"
               />
               <div className="flex flex-1 flex-col gap-2 pt-1">
-                <div className="h-4 w-full animate-pulse rounded-full bg-mb-pink" />
-                <div className="h-4 w-3/4 animate-pulse rounded-full bg-mb-pink-soft" />
+                <div className="bg-mb-pink h-4 w-full animate-pulse rounded-full" />
+                <div className="bg-mb-pink-soft h-4 w-3/4 animate-pulse rounded-full" />
               </div>
             </div>
           </MBCard>
@@ -47,11 +47,7 @@ function BookSearchCard({ book }: { book: Book }) {
   const author = book.authors?.[0] ?? "Autor desconocido";
 
   return (
-    <MBCard
-      color="#FFFCFE"
-      radius={18}
-      className="relative flex flex-col items-center gap-3 p-4"
-    >
+    <MBCard color="#FFFCFE" radius={18} className="relative flex flex-col items-center gap-3 p-4">
       <MBBookCover title={book.title} author={author} width={70} height={105} tilt={-3} />
       <div className="w-full text-center">
         <p
@@ -134,7 +130,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Título, autor o ISBN…"
           autoComplete="off"
-          className="focus-visible:ring-mb-pink-deep flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-mb-cream"
+          className="focus-visible:ring-mb-pink-deep focus-visible:ring-offset-mb-cream flex-1 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           style={{
             borderRadius: 999,
             padding: "12px 18px",

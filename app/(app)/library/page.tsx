@@ -1,21 +1,20 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { LibraryEmptyState } from "@/components/library/library-empty-state";
 import { LibraryEntryCard } from "@/components/library/library-entry-card";
 import { LibraryFilterPills } from "@/components/library/library-filter-pills";
 import { MBSparkle } from "@/components/mb/sparkle";
+import type { Database } from "@/lib/database.types";
 import type { EntryStatus } from "@/lib/library/types";
 import { rowToEntry } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/database.types";
 
 const VALID_STATUSES = new Set<string>(["to_read", "reading", "read"]);
 
 type SearchParams = Promise<{ status?: string }>;
 
 async function fetchCounts(supabase: SupabaseClient<Database>) {
-  const { data } = await supabase
-    .from("library_entries")
-    .select("status");
+  const { data } = await supabase.from("library_entries").select("status");
 
   const rows = data ?? [];
   return {

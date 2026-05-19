@@ -43,8 +43,7 @@ export function LibraryFilterPills({ counts, current }: Props) {
             onClick={() => navigate(f.key)}
             aria-pressed={active}
           >
-            {f.label}{" "}
-            <span style={{ opacity: 0.7, marginLeft: 4, fontSize: 12 }}>{count}</span>
+            {f.label} <span style={{ opacity: 0.7, marginLeft: 4, fontSize: 12 }}>{count}</span>
           </MBPill>
         );
       })}

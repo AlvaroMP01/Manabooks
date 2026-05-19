@@ -2,8 +2,8 @@ import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
 import { MBStatus } from "@/components/mb/status";
 import { MBSticker } from "@/components/mb/sticker";
-import { dbStatusToMBKey } from "@/lib/library/utils";
 import type { LibraryEntry } from "@/lib/library/types";
+import { dbStatusToMBKey } from "@/lib/library/utils";
 
 /** LibraryEntryCard — book card with MB cover, title, author and status chip. */
 export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
