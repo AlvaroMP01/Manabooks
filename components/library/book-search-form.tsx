@@ -5,7 +5,7 @@ import { type FormEvent, useCallback, useEffect, useState, useTransition } from 
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBButton } from "@/components/mb/button";
 import { MBCard } from "@/components/mb/card";
-import { MBSticker } from "@/components/mb/sticker";
+import { AddToLibraryDialog } from "@/components/library/add-to-library-dialog";
 import type { Book, BooksSearchResult } from "@/lib/google-books/types";
 
 function BookSearchSkeleton() {
@@ -80,16 +80,7 @@ function BookSearchCard({ book }: { book: Book }) {
           {author}
         </p>
       </div>
-      <MBSticker
-        color="var(--color-mb-pink-soft)"
-        fontSize={13}
-        padding="5px 14px"
-        aria-disabled="true"
-        aria-label={`Agregar "${book.title}" a tu biblioteca (próximamente)`}
-        style={{ cursor: "not-allowed", opacity: 0.75 }}
-      >
-        agregar ✦
-      </MBSticker>
+      <AddToLibraryDialog book={book} />
     </MBCard>
   );
 }
