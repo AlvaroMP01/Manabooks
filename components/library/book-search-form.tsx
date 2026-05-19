@@ -1,47 +1,100 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { type FormEvent, useCallback, useEffect, useState, useTransition } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { MBBookCover } from "@/components/mb/book-cover";
+import { MBButton } from "@/components/mb/button";
+import { MBCard } from "@/components/mb/card";
+import { MBSticker } from "@/components/mb/sticker";
 import type { Book, BooksSearchResult } from "@/lib/google-books/types";
 
-function BookSearchCard({ book }: { book: Book }) {
-  const authors = book.authors?.join(", ") ?? "Autor desconocido";
-
+function BookSearchSkeleton() {
   return (
-    <div className="ring-foreground/10 flex items-start gap-4 rounded-xl p-4 ring-1">
-      {book.thumbnail ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={book.thumbnail}
-          alt=""
-          width={64}
-          height={96}
-          className="rounded-soft h-24 w-16 shrink-0 object-cover"
-        />
-      ) : (
-        <div aria-hidden="true" className="rounded-soft bg-mb-pink-soft h-24 w-16 shrink-0" />
-      )}
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="truncate font-medium" title={book.title}>
-          {book.title}
-        </p>
-        <p className="truncate text-sm text-neutral-700">{authors}</p>
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2 w-fit"
-          disabled
-          aria-label={`Agregar "${book.title}" a tu biblioteca`}
-        >
-          Agregar
-        </Button>
-      </div>
-    </div>
+    <ul
+      role="list"
+      className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      aria-busy="true"
+      aria-label="Buscando…"
+    >
+      {Array.from({ length: 6 }).map((_, i) => (
+        <li key={i}>
+          <MBCard
+            color="#FFD0E7"
+            radius={18}
+            shadow={false}
+            className="flex flex-col items-center gap-4 p-5"
+          >
+            <div
+              style={{
+                width: 130,
+                height: 195,
+                borderRadius: "4px 12px 12px 4px",
+                border: "2px solid #3B1F47",
+                background: "#FFFCFE",
+                flexShrink: 0,
+              }}
+              className="animate-pulse"
+            />
+            <div className="flex w-full flex-col items-center gap-2">
+              <div className="bg-mb-pink h-4 w-full animate-pulse rounded-full" />
+              <div className="bg-mb-pink-soft h-4 w-3/4 animate-pulse rounded-full" />
+            </div>
+          </MBCard>
+        </li>
+      ))}
+    </ul>
   );
 }
 
+function BookSearchCard({ book }: { book: Book }) {
+  const author = book.authors?.[0] ?? "Autor desconocido";
+
+  return (
+    <MBCard color="#FFFCFE" radius={18} className="relative flex flex-col items-center gap-4 p-5">
+      <MBBookCover
+        title={book.title}
+        author={author}
+        thumbnail={book.thumbnail}
+        width={130}
+        height={195}
+        tilt={-3}
+      />
+      <div className="w-full text-center">
+        <p
+          className="line-clamp-2"
+          style={{
+            fontFamily: "var(--font-sticker)",
+            fontSize: 17,
+            color: "#3B1F47",
+            margin: 0,
+            lineHeight: 1.15,
+          }}
+          title={book.title}
+        >
+          {book.title}
+        </p>
+        <p
+          className="mt-1.5 line-clamp-1"
+          style={{ fontFamily: "var(--font-hand)", fontSize: 17, color: "#8B3FE0" }}
+        >
+          {author}
+        </p>
+      </div>
+      <MBSticker
+        color="var(--color-mb-pink-soft)"
+        fontSize={13}
+        padding="5px 14px"
+        aria-disabled="true"
+        aria-label={`Agregar "${book.title}" a tu biblioteca (próximamente)`}
+        style={{ cursor: "not-allowed", opacity: 0.75 }}
+      >
+        agregar ✦
+      </MBSticker>
+    </MBCard>
+  );
+}
+
+/** BookSearchForm — Google Books search with MB-styled input, button, and result cards. */
 export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string }) {
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<Book[] | null>(null);
@@ -63,7 +116,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
   }, []);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       runSearch(query);
     },
@@ -75,8 +128,8 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
   }, [initialQuery, runSearch]);
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="flex gap-2">
+    <div className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit} className="flex gap-3">
         <label htmlFor="book-search-input" className="sr-only">
           Buscar libros
         </label>
@@ -86,55 +139,52 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Título, autor o ISBN…"
-          className="focus-visible:ring-mb-pink-deep flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2"
           autoComplete="off"
+          className="focus-visible:ring-mb-pink-deep focus-visible:ring-offset-mb-cream flex-1 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          style={{
+            borderRadius: 999,
+            padding: "12px 18px",
+            border: "2px solid #3B1F47",
+            boxShadow: "2px 3px 0 #3B1F47",
+            background: "var(--color-mb-white)",
+            fontFamily: "var(--font-body)",
+            fontSize: 15,
+            color: "#3B1F47",
+          }}
         />
-        <Button type="submit" disabled={isPending || !query.trim()}>
-          Buscar
-        </Button>
+        <MBButton type="submit" color="purple" size="md" disabled={isPending || !query.trim()}>
+          buscar ✦
+        </MBButton>
       </form>
 
-      {isPending && (
-        <ul
-          role="list"
-          className="grid gap-4 sm:grid-cols-2"
-          aria-busy="true"
-          aria-label="Buscando…"
+      {isPending && <BookSearchSkeleton />}
+
+      {!isPending && results === null && (
+        <p
+          className="text-center"
+          style={{ fontFamily: "var(--font-hand)", fontSize: 18, color: "#3B1F47" }}
         >
-          {Array.from({ length: 4 }).map((_, i) => (
-            <li key={i}>
-              <div className="ring-foreground/10 flex gap-4 rounded-xl p-4 ring-1">
-                <Skeleton className="rounded-soft h-24 w-16 shrink-0" />
-                <div className="flex flex-1 flex-col gap-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+          Escribí el nombre de un libro para buscarlo
+        </p>
       )}
 
       {!isPending && results !== null && results.length === 0 && (
-        <p className="text-center text-sm text-neutral-500">
-          No se encontraron resultados para &ldquo;{query}&rdquo;.
+        <p
+          className="text-center"
+          style={{ fontFamily: "var(--font-hand)", fontSize: 18, color: "#3B1F47" }}
+        >
+          No encontramos resultados para «{query}»
         </p>
       )}
 
       {!isPending && results !== null && results.length > 0 && (
-        <ul role="list" className="grid gap-4 sm:grid-cols-2">
+        <ul role="list" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((book) => (
             <li key={book.volumeId}>
               <BookSearchCard book={book} />
             </li>
           ))}
         </ul>
-      )}
-
-      {results === null && !isPending && (
-        <p className="text-center text-sm text-neutral-500">
-          Escribí el nombre de un libro para buscarlo.
-        </p>
       )}
     </div>
   );
