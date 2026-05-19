@@ -5,6 +5,7 @@ import {
   deleteEntrySchema,
   entryStatusSchema,
   updateEntryStatusSchema,
+  updateProgressSchema,
 } from "@/lib/validation/library";
 
 describe("entryStatusSchema", () => {
@@ -124,5 +125,97 @@ describe("deleteEntrySchema", () => {
   it("rejects missing id", () => {
     const result = deleteEntrySchema.safeParse({});
     expect(result.success).toBe(false);
+  });
+});
+
+describe("updateProgressSchema", () => {
+  const validId = "550e8400-e29b-41d4-a716-446655440000";
+
+  it("accepts valid input with totalPages set", () => {
+    const result = updateProgressSchema.safeParse({
+      id: validId,
+      currentPage: 50,
+      totalPages: 200,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts valid input with totalPages=null", () => {
+    const result = updateProgressSchema.safeParse({
+      id: validId,
+      currentPage: 50,
+      totalPages: null,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts valid input with totalPages omitted", () => {
+    const result = updateProgressSchema.safeParse({
+      id: validId,
+      currentPage: 50,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects currentPage < 0", () => {
+    const result = updateProgressSchema.safeParse({
+      id: validId,
+      currentPage: -1,
+      totalPages: 200,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects totalPages = 0 (min is 1)", () => {
+    const result = updateProgressSchema.safeParse({
+      id: validId,
+      currentPage: 0,
+      totalPages: 0,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects currentPage > totalPages (refine guard)", () => {
+    const result = updateProgressSchema.safeParse({
+      id: validId,
+      currentPage: 201,
+      totalPages: 200,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects non-uuid id", () => {
+    const result = updateProgressSchema.safeParse({
+      id: "not-a-uuid",
+      currentPage: 50,
+      totalPages: 200,
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("addToLibrarySchema — totalPages field", () => {
+  const validBase = {
+    googleVolumeId: "abc123",
+    title: "Cien años de soledad",
+    authors: ["Gabriel García Márquez"],
+    thumbnailUrl: null,
+  };
+
+  it("accepts existing valid input without totalPages (regression)", () => {
+    const result = addToLibrarySchema.safeParse(validBase);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts input with totalPages=320", () => {
+    const result = addToLibrarySchema.safeParse({ ...validBase, totalPages: 320 });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.totalPages).toBe(320);
+  });
+
+  it("accepts input with totalPages=null", () => {
+    const result = addToLibrarySchema.safeParse({ ...validBase, totalPages: null });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.totalPages).toBeNull();
   });
 });

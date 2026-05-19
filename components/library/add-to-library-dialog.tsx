@@ -41,6 +41,7 @@ export function AddToLibraryDialog({ book }: Props) {
         authors: book.authors,
         thumbnailUrl: book.thumbnail,
         status,
+        totalPages: book.pageCount ?? null,
       });
 
       if (result.ok) {

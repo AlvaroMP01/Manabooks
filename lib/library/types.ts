@@ -15,6 +15,8 @@ export type LibraryEntry = {
   finishedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  currentPage: number;
+  totalPages: number | null;
 };
 
 export function rowToEntry(row: Row): LibraryEntry {
@@ -29,5 +31,7 @@ export function rowToEntry(row: Row): LibraryEntry {
     finishedAt: row.finished_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    currentPage: row.current_page,
+    totalPages: row.total_pages,
   };
 }

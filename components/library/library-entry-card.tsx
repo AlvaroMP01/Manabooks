@@ -1,6 +1,7 @@
 import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
+import { MBProgress } from "@/components/mb/progress";
 import { MBStatus } from "@/components/mb/status";
 import { MBSticker } from "@/components/mb/sticker";
 import type { LibraryEntry } from "@/lib/library/types";
@@ -59,6 +60,30 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
           </p>
         )}
       </div>
+      {/* Progress bar — only when reading AND totalPages is known */}
+      {entry.status === "reading" && entry.totalPages !== null && (
+        <div className="w-full space-y-1">
+          <MBProgress value={entry.currentPage} max={entry.totalPages} height={10} />
+          <p
+            className="text-xs"
+            style={{ fontFamily: "var(--font-body)", color: "var(--color-mb-ink, #3B1F47)" }}
+          >
+            página {entry.currentPage} de {entry.totalPages} ·{" "}
+            {Math.round((entry.currentPage / entry.totalPages) * 100)}%
+          </p>
+        </div>
+      )}
+
+      {/* Caption-only fallback: reading with no totalPages but some progress */}
+      {entry.status === "reading" && entry.totalPages === null && entry.currentPage > 0 && (
+        <p
+          className="w-full text-xs"
+          style={{ fontFamily: "var(--font-body)", color: "var(--color-mb-ink, #3B1F47)" }}
+        >
+          página {entry.currentPage}
+        </p>
+      )}
+
       <div className="flex w-full items-center justify-between gap-2">
         <MBStatus status={mbStatus} />
         <EntryActionsMenu entry={entry} />
