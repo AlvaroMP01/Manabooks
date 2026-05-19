@@ -40,9 +40,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           buscá tu próxima lectura en Google Books ✿
         </p>
       </header>
-      <MBSticker color="#FFD86B" rotate={-3} fontSize={14} padding="6px 14px">
-        encontrá tu próxima obsesión
-      </MBSticker>
+      <div className="self-start">
+        <MBSticker color="#FFD86B" rotate={-3} fontSize={14} padding="6px 14px">
+          encontrá tu próxima obsesión
+        </MBSticker>
+      </div>
       <BookSearchForm key={initialQuery} initialQuery={initialQuery} />
     </div>
   );

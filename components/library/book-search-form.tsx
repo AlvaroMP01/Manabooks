@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { type FormEvent, useCallback, useEffect, useState, useTransition } from "react";
 
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBButton } from "@/components/mb/button";
@@ -18,23 +18,26 @@ function BookSearchSkeleton() {
     >
       {Array.from({ length: 6 }).map((_, i) => (
         <li key={i}>
-          <MBCard color="#FFD0E7" radius={18} shadow={false} className="p-4">
-            <div className="flex gap-3">
-              <div
-                style={{
-                  width: 70,
-                  height: 105,
-                  borderRadius: "4px 12px 12px 4px",
-                  border: "2px solid #3B1F47",
-                  background: "#FFD0E7",
-                  flexShrink: 0,
-                }}
-                className="animate-pulse"
-              />
-              <div className="flex flex-1 flex-col gap-2 pt-1">
-                <div className="bg-mb-pink h-4 w-full animate-pulse rounded-full" />
-                <div className="bg-mb-pink-soft h-4 w-3/4 animate-pulse rounded-full" />
-              </div>
+          <MBCard
+            color="#FFD0E7"
+            radius={18}
+            shadow={false}
+            className="flex flex-col items-center gap-4 p-5"
+          >
+            <div
+              style={{
+                width: 130,
+                height: 195,
+                borderRadius: "4px 12px 12px 4px",
+                border: "2px solid #3B1F47",
+                background: "#FFFCFE",
+                flexShrink: 0,
+              }}
+              className="animate-pulse"
+            />
+            <div className="flex w-full flex-col items-center gap-2">
+              <div className="bg-mb-pink h-4 w-full animate-pulse rounded-full" />
+              <div className="bg-mb-pink-soft h-4 w-3/4 animate-pulse rounded-full" />
             </div>
           </MBCard>
         </li>
@@ -47,33 +50,40 @@ function BookSearchCard({ book }: { book: Book }) {
   const author = book.authors?.[0] ?? "Autor desconocido";
 
   return (
-    <MBCard color="#FFFCFE" radius={18} className="relative flex flex-col items-center gap-3 p-4">
-      <MBBookCover title={book.title} author={author} width={70} height={105} tilt={-3} />
+    <MBCard color="#FFFCFE" radius={18} className="relative flex flex-col items-center gap-4 p-5">
+      <MBBookCover
+        title={book.title}
+        author={author}
+        thumbnail={book.thumbnail}
+        width={130}
+        height={195}
+        tilt={-3}
+      />
       <div className="w-full text-center">
         <p
           className="line-clamp-2"
           style={{
             fontFamily: "var(--font-sticker)",
-            fontSize: 14,
+            fontSize: 17,
             color: "#3B1F47",
             margin: 0,
-            lineHeight: 1.1,
+            lineHeight: 1.15,
           }}
           title={book.title}
         >
           {book.title}
         </p>
         <p
-          className="mt-1 line-clamp-1"
-          style={{ fontFamily: "var(--font-hand)", fontSize: 14, color: "#8B3FE0" }}
+          className="mt-1.5 line-clamp-1"
+          style={{ fontFamily: "var(--font-hand)", fontSize: 17, color: "#8B3FE0" }}
         >
           {author}
         </p>
       </div>
       <MBSticker
         color="var(--color-mb-pink-soft)"
-        fontSize={12}
-        padding="4px 12px"
+        fontSize={13}
+        padding="5px 14px"
         aria-disabled="true"
         aria-label={`Agregar "${book.title}" a tu biblioteca (próximamente)`}
         style={{ cursor: "not-allowed", opacity: 0.75 }}
@@ -106,7 +116,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
   }, []);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       runSearch(query);
     },
