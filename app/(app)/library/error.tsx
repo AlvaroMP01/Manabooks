@@ -1,29 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { MBButton } from "@/components/mb/button";
+import { MBSticker } from "@/components/mb/sticker";
 
-import { Button } from "@/components/ui/button";
-
-export default function LibraryError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-
+export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <p className="text-lg font-medium text-neutral-700">No se pudo cargar tu biblioteca</p>
-      <p className="mt-2 text-sm text-neutral-500">
-        Ocurrió un error inesperado. Podés intentar de nuevo.
+    <div className="grid place-items-center gap-5 py-16 text-center">
+      <MBSticker color="#FF3D9A" rotate={-4} fontSize={28}>
+        ups ✦
+      </MBSticker>
+      <p style={{ fontFamily: "var(--font-hand)", fontSize: 22, color: "#3B1F47" }}>
+        algo se quemó en la imprenta, intentá de nuevo.
       </p>
-      <Button onClick={reset} className="mt-6">
-        Reintentar
-      </Button>
+      <MBButton color="pink" onClick={reset}>
+        reintentar
+      </MBButton>
     </div>
   );
 }

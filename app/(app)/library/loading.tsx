@@ -1,29 +1,25 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { MBCard } from "@/components/mb/card";
 
-export default function LibraryLoading() {
+export default function Loading() {
   return (
-    <section className="space-y-6">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-9 w-72" />
+    <div className="flex flex-col gap-6" aria-busy="true" aria-label="Cargando biblioteca…">
+      <div className="h-14 w-64 animate-pulse rounded-md bg-mb-pink-soft" />
+      <div className="h-6 w-48 animate-pulse rounded-md bg-mb-pink-soft" />
+      <div className="h-8 w-72 animate-pulse rounded-full bg-mb-pink-soft" />
       <ul
         role="list"
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        aria-busy="true"
-        aria-label="Cargando biblioteca…"
+        className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
       >
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 10 }).map((_, i) => (
           <li key={i}>
-            <div className="ring-foreground/10 flex gap-4 rounded-xl p-4 ring-1">
-              <Skeleton className="rounded-soft h-24 w-16 shrink-0" />
-              <div className="flex flex-1 flex-col gap-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="mt-1 h-5 w-16 rounded-full" />
-              </div>
-            </div>
+            <MBCard color="#FFD0E7" radius={18} shadow={false} className="p-4">
+              <div className="h-44 w-full animate-pulse rounded-md bg-mb-pink" />
+              <div className="mt-3 h-3 w-3/4 animate-pulse rounded-full bg-mb-pink" />
+              <div className="mt-2 h-3 w-1/2 animate-pulse rounded-full bg-mb-pink-soft" />
+            </MBCard>
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   );
 }
