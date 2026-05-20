@@ -1,18 +1,39 @@
 import type { EntryStatus } from "@/lib/library/types";
 
-type Timestamps = { startedAt: string | null; finishedAt: string | null };
+export type StatusChangeInput = {
+  prevStatus: EntryStatus;
+  nextStatus: EntryStatus;
+  startedAt: string | null;
+  finishedAt: string | null;
+  currentPage: number;
+  totalPages: number | null;
+};
 
-/** Compute auto-set started_at / finished_at on status transitions. Set-on-first-transition only. */
-export function computeTimestamps(
-  prevStatus: EntryStatus,
-  nextStatus: EntryStatus,
-  current: Timestamps
-): Timestamps {
+export type StatusChangeResult = {
+  startedAt: string | null;
+  finishedAt: string | null;
+  currentPage: number;
+};
+
+/**
+ * Compute auto-set started_at / finished_at / current_page on manual status changes.
+ * Timestamps are set-on-first-transition only. When marking as "read" with a known
+ * total_pages, current_page is bumped to total_pages so progress mirrors completion.
+ */
+export function computeStatusChange(input: StatusChangeInput): StatusChangeResult {
+  const { nextStatus, currentPage, totalPages } = input;
   const now = new Date().toISOString();
-  let { startedAt, finishedAt } = current;
+  let { startedAt, finishedAt } = input;
+  let nextCurrentPage = currentPage;
+
   if (nextStatus === "reading" && startedAt === null) startedAt = now;
   if (nextStatus === "read" && finishedAt === null) finishedAt = now;
-  return { startedAt, finishedAt };
+
+  if (nextStatus === "read" && totalPages !== null && currentPage < totalPages) {
+    nextCurrentPage = totalPages;
+  }
+
+  return { startedAt, finishedAt, currentPage: nextCurrentPage };
 }
 
 export type ProgressTransitionInput = {

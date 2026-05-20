@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import type { Database } from "@/lib/database.types";
 import type { ActionResult } from "@/lib/library/action-result";
-import { computeProgressTransition, computeTimestamps } from "@/lib/library/transitions";
+import { computeProgressTransition, computeStatusChange } from "@/lib/library/transitions";
 import type { EntryStatus } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -63,20 +63,29 @@ export async function updateEntryStatus(input: UpdateEntryStatusInput): Promise<
 
   const { data: current, error: fetchError } = await supabase
     .from("library_entries")
-    .select("status, started_at, finished_at")
+    .select("status, started_at, finished_at, current_page, total_pages")
     .eq("id", parsed.data.id)
     .single();
 
   if (fetchError || !current) return { ok: false, code: "not_found" };
 
-  const { startedAt, finishedAt } = computeTimestamps(current.status, parsed.data.status, {
+  const { startedAt, finishedAt, currentPage } = computeStatusChange({
+    prevStatus: current.status,
+    nextStatus: parsed.data.status,
     startedAt: current.started_at,
     finishedAt: current.finished_at,
+    currentPage: current.current_page,
+    totalPages: current.total_pages,
   });
 
   const { error } = await supabase
     .from("library_entries")
-    .update({ status: parsed.data.status, started_at: startedAt, finished_at: finishedAt })
+    .update({
+      status: parsed.data.status,
+      started_at: startedAt,
+      finished_at: finishedAt,
+      current_page: currentPage,
+    })
     .eq("id", parsed.data.id);
 
   if (error) return { ok: false, code: "unknown", message: error.message };
