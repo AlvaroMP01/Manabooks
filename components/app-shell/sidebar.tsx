@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { MBButton } from "@/components/mb/button";
 import { MBWordmark } from "@/components/mb/wordmark";
 
 import { SidebarNav } from "./sidebar-nav";
@@ -48,7 +47,7 @@ export function Sidebar({ displayName, email }: Props) {
 
       <SidebarNav items={NAV_ITEMS} />
 
-      <div className="mt-auto flex flex-col gap-2">
+      <div className="mt-auto">
         {/* User mini card */}
         <div
           style={{
@@ -94,13 +93,6 @@ export function Sidebar({ displayName, email }: Props) {
             </div>
           </div>
         </div>
-
-        {/* Sign-out */}
-        <form action="/auth/sign-out" method="post">
-          <MBButton type="submit" color="white" size="sm" className="w-full">
-            Cerrar sesión
-          </MBButton>
-        </form>
       </div>
     </aside>
   );
