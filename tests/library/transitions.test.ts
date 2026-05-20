@@ -87,6 +87,7 @@ describe("computeProgressTransition", () => {
       currentPage: 0,
       totalPages: 200,
       currentStartedAt: null,
+      currentFinishedAt: null,
     });
     expect(result.autoStatus).toBeNull();
     expect(result.promptComplete).toBe(false);
@@ -99,6 +100,7 @@ describe("computeProgressTransition", () => {
       currentPage: 5,
       totalPages: 200,
       currentStartedAt: null,
+      currentFinishedAt: null,
     });
     const after = Date.now();
     expect(result.autoStatus).toBe("reading");
@@ -115,6 +117,7 @@ describe("computeProgressTransition", () => {
       currentPage: 5,
       totalPages: 200,
       currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
     });
     expect(result.autoStatus).toBe("reading");
     expect(result.startedAt).toBe(FIXED_TS);
@@ -127,6 +130,7 @@ describe("computeProgressTransition", () => {
       currentPage: 50,
       totalPages: 200,
       currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
     });
     expect(result.autoStatus).toBeNull();
     expect(result.promptComplete).toBe(false);
@@ -138,19 +142,67 @@ describe("computeProgressTransition", () => {
       currentPage: 200,
       totalPages: 200,
       currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
     });
     expect(result.autoStatus).toBeNull();
     expect(result.promptComplete).toBe(true);
   });
 
-  it("read + currentPage=0 → no reverse transition, no prompt", () => {
+  it("read + currentPage=0 + totalPages set → reverse to reading, clears finishedAt, preserves startedAt", () => {
+    const FINISHED_TS = "2026-04-01T10:00:00.000Z";
     const result = computeProgressTransition({
       prevStatus: "read",
       currentPage: 0,
       totalPages: 200,
       currentStartedAt: FIXED_TS,
+      currentFinishedAt: FINISHED_TS,
+    });
+    expect(result.autoStatus).toBe("reading");
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.promptComplete).toBe(false);
+  });
+
+  it("read + currentPage=100 (below total) → reverse to reading, clears finishedAt", () => {
+    const FINISHED_TS = "2026-04-01T10:00:00.000Z";
+    const result = computeProgressTransition({
+      prevStatus: "read",
+      currentPage: 100,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+      currentFinishedAt: FINISHED_TS,
+    });
+    expect(result.autoStatus).toBe("reading");
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.promptComplete).toBe(false);
+  });
+
+  it("read + currentPage=totalPages → no transition (still complete), promptComplete=true", () => {
+    const FINISHED_TS = "2026-04-01T10:00:00.000Z";
+    const result = computeProgressTransition({
+      prevStatus: "read",
+      currentPage: 200,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+      currentFinishedAt: FINISHED_TS,
     });
     expect(result.autoStatus).toBeNull();
+    expect(result.finishedAt).toBe(FINISHED_TS);
+    expect(result.promptComplete).toBe(true);
+  });
+
+  it("read + currentPage=100 + totalPages=null → no transition (can't determine progress)", () => {
+    const FINISHED_TS = "2026-04-01T10:00:00.000Z";
+    const result = computeProgressTransition({
+      prevStatus: "read",
+      currentPage: 100,
+      totalPages: null,
+      currentStartedAt: FIXED_TS,
+      currentFinishedAt: FINISHED_TS,
+    });
+    expect(result.autoStatus).toBeNull();
+    expect(result.finishedAt).toBe(FINISHED_TS);
     expect(result.promptComplete).toBe(false);
   });
 
@@ -160,6 +212,7 @@ describe("computeProgressTransition", () => {
       currentPage: 999,
       totalPages: null,
       currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
     });
     expect(result.promptComplete).toBe(false);
     expect(result.autoStatus).toBeNull();

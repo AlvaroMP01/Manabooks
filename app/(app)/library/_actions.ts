@@ -113,7 +113,7 @@ export async function updateProgress(
   // 3. Fetch current row — RLS scopes to own rows, so forged id yields not_found.
   const { data: current, error: fetchError } = await supabase
     .from("library_entries")
-    .select("status, current_page, total_pages, started_at")
+    .select("status, current_page, total_pages, started_at, finished_at")
     .eq("id", parsed.data.id)
     .maybeSingle();
 
@@ -130,16 +130,21 @@ export async function updateProgress(
     currentPage: parsed.data.currentPage,
     totalPages: effectiveTotalPages,
     currentStartedAt: current.started_at,
+    currentFinishedAt: current.finished_at,
   });
 
-  // 6. Build a single typed UPDATE payload — only touch status/started_at when auto-transition fires.
+  // 6. Build a single typed UPDATE payload — touch status/started_at/finished_at only when auto-transition fires.
   type LibraryEntriesUpdate = Database["public"]["Tables"]["library_entries"]["Update"];
 
   const update: LibraryEntriesUpdate = {
     current_page: parsed.data.currentPage,
     total_pages: effectiveTotalPages,
     ...(transition.autoStatus !== null
-      ? { status: transition.autoStatus, started_at: transition.startedAt }
+      ? {
+          status: transition.autoStatus,
+          started_at: transition.startedAt,
+          finished_at: transition.finishedAt,
+        }
       : {}),
   };
 
