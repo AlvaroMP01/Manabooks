@@ -26,19 +26,23 @@ interface Props {
   onOpenChange: (open: boolean) => void;
 }
 
+interface InnerProps extends Props {
+  phase: Phase;
+  setPhase: (phase: Phase) => void;
+}
+
 function parsePositiveInt(raw: string): number | null {
   const n = Number.parseInt(raw, 10);
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
-function UpdateProgressDialogInner({ entry, open, onOpenChange }: Props) {
+function UpdateProgressDialogInner({ entry, open, onOpenChange, phase, setPhase }: InnerProps) {
   const [currentPageStr, setCurrentPageStr] = useState<string>(() =>
     String(entry.currentPage ?? 0)
   );
   const [totalPagesStr, setTotalPagesStr] = useState<string>(() =>
     entry.totalPages !== null ? String(entry.totalPages) : ""
   );
-  const [phase, setPhase] = useState<Phase>("editing");
   const [isPending, startTransition] = useTransition();
 
   // Derived numeric values (always safe — never NaN, never negative).
@@ -282,8 +286,30 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange }: Props) {
 }
 
 export function UpdateProgressDialog(props: Props) {
+  // `phase` lives in the OUTER so it survives inner remounts. The inner remounts when
+  // entry.currentPage / entry.totalPages change (via revalidatePath after updateProgress).
+  // If phase lived inside the inner, that mid-flow remount would reset it back to "editing"
+  // right when the server says "promptComplete=true", killing the "Marcar como leído?" prompt
+  // and stacking it behind a fresh editing dialog.
+  const [phase, setPhase] = useState<Phase>("editing");
+
+  // Reset to editing when the dialog signals close — covers Cancel, click-outside, Esc,
+  // and post-confirm close. Wraps the caller's onOpenChange instead of being an effect.
+  const handleOpenChange = (next: boolean) => {
+    if (!next) setPhase("editing");
+    props.onOpenChange(next);
+  };
+
   // Remount the inner only when the underlying data changes — NOT on every open toggle.
   // This avoids the setState-in-effect lint rule and keeps base-ui's Dialog close animation intact.
   const remountKey = `${props.entry.id}-${props.entry.currentPage}-${props.entry.totalPages ?? "null"}`;
-  return <UpdateProgressDialogInner key={remountKey} {...props} />;
+  return (
+    <UpdateProgressDialogInner
+      key={remountKey}
+      {...props}
+      onOpenChange={handleOpenChange}
+      phase={phase}
+      setPhase={setPhase}
+    />
+  );
 }
