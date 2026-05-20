@@ -42,6 +42,7 @@ export function AddToLibraryDialog({ book }: Props) {
         thumbnailUrl: book.thumbnail,
         status,
         totalPages: book.pageCount ?? null,
+        synopsis: book.description, // already plain text via mapVolume(); truncated by Zod transform if oversized
       });
 
       if (result.ok) {
@@ -99,6 +100,19 @@ export function AddToLibraryDialog({ book }: Props) {
             >
               {author}
             </p>
+            {book.description && (
+              <p
+                className="mt-3 max-h-48 overflow-y-auto text-left"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 13,
+                  color: "#3B1F47",
+                  lineHeight: 1.5,
+                }}
+              >
+                {book.description}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">

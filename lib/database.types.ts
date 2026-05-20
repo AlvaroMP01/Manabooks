@@ -44,6 +44,7 @@ export type Database = {
           id: string
           started_at: string | null
           status: Database["public"]["Enums"]["entry_status"]
+          synopsis: string | null
           thumbnail_url: string | null
           title: string
           total_pages: number | null
@@ -59,6 +60,7 @@ export type Database = {
           id?: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["entry_status"]
+          synopsis?: string | null
           thumbnail_url?: string | null
           title: string
           total_pages?: number | null
@@ -74,6 +76,7 @@ export type Database = {
           id?: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["entry_status"]
+          synopsis?: string | null
           thumbnail_url?: string | null
           title?: string
           total_pages?: number | null

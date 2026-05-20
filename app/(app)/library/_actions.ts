@@ -39,6 +39,7 @@ export async function addToLibrary(
       thumbnail_url: parsed.data.thumbnailUrl ?? null,
       status: parsed.data.status ?? "to_read",
       total_pages: parsed.data.totalPages ?? null,
+      synopsis: parsed.data.synopsis ?? null, // already truncated by Zod transform
     })
     .select("id")
     .single();

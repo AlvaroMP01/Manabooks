@@ -1,5 +1,7 @@
 import "server-only";
 
+import { stripHtml } from "@/lib/utils/strip-html";
+
 import type { Book, BooksSearchResult } from "./types";
 
 const BASE_URL = "https://www.googleapis.com/books/v1";
@@ -36,6 +38,10 @@ interface RawGoogleBooksResponse {
   items?: RawVolume[];
 }
 
+/**
+ * Invariant: after this function returns, Book.description is plain text.
+ * Do not re-sanitize downstream. Do not pass to dangerouslySetInnerHTML.
+ */
 function mapVolume(raw: RawVolume): Book {
   const info = raw.volumeInfo ?? {};
   return {
@@ -44,7 +50,7 @@ function mapVolume(raw: RawVolume): Book {
     authors: info.authors ?? [],
     thumbnail: info.imageLinks?.thumbnail ?? null,
     publishedDate: info.publishedDate ?? null,
-    description: info.description ?? null,
+    description: stripHtml(info.description),
     pageCount: info.pageCount ?? null,
     categories: info.categories ?? [],
     language: info.language ?? null,

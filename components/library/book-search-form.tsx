@@ -80,7 +80,7 @@ function BookSearchSkeleton() {
   );
 }
 
-function BookSearchCard({ book }: { book: Book }) {
+export function BookSearchCard({ book }: { book: Book }) {
   const author = book.authors?.[0] ?? "Autor desconocido";
 
   return (
@@ -113,6 +113,20 @@ function BookSearchCard({ book }: { book: Book }) {
         >
           {author}
         </p>
+        {book.description && (
+          <p
+            className="mt-2 line-clamp-3 text-left"
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              color: "#3B1F47",
+              lineHeight: 1.4,
+            }}
+            title={book.description}
+          >
+            {book.description}
+          </p>
+        )}
       </div>
       <AddToLibraryDialog book={book} />
     </MBCard>
