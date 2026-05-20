@@ -20,11 +20,13 @@ export type ProgressTransitionInput = {
   currentPage: number;
   totalPages: number | null;
   currentStartedAt: string | null;
+  currentFinishedAt: string | null;
 };
 
 export type ProgressTransitionResult = {
   autoStatus: EntryStatus | null;
   startedAt: string | null;
+  finishedAt: string | null;
   promptComplete: boolean;
 };
 
@@ -32,17 +34,26 @@ export type ProgressTransitionResult = {
 export function computeProgressTransition(
   input: ProgressTransitionInput
 ): ProgressTransitionResult {
-  const { prevStatus, currentPage, totalPages, currentStartedAt } = input;
+  const { prevStatus, currentPage, totalPages, currentStartedAt, currentFinishedAt } = input;
   const now = new Date().toISOString();
 
   let autoStatus: EntryStatus | null = null;
   let startedAt = currentStartedAt;
+  let finishedAt = currentFinishedAt;
   let promptComplete = false;
 
   // Rule 1: auto-transition to_read → reading when progress moves forward.
   if (prevStatus === "to_read" && currentPage > 0) {
     autoStatus = "reading";
     startedAt = currentStartedAt ?? now;
+  }
+
+  // Rule 1b: auto-transition read → reading on backward progress (re-read scenario).
+  // Preserves the original startedAt and clears finishedAt so the entry doesn't sit
+  // in an inconsistent "reading but already finished" state.
+  if (prevStatus === "read" && totalPages !== null && currentPage < totalPages) {
+    autoStatus = "reading";
+    finishedAt = null;
   }
 
   // Rule 2: flag completion prompt when currentPage reaches totalPages.
@@ -52,7 +63,7 @@ export function computeProgressTransition(
   }
 
   // Rule 3 (non-goal): setting currentPage = 0 on a reading entry does NOT
-  // revert status to to_read. Status is sticky once forward-transitioned.
+  // revert status to to_read. Status is sticky once forward-transitioned from to_read.
 
-  return { autoStatus, startedAt, promptComplete };
+  return { autoStatus, startedAt, finishedAt, promptComplete };
 }
