@@ -10,8 +10,14 @@ export const addToLibrarySchema = z.object({
   thumbnailUrl: z.string().url().nullable().optional(),
   status: entryStatusSchema.optional(),
   totalPages: z.number().int().min(1).nullable().optional(),
+  synopsis: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((s) => (typeof s === "string" ? s.slice(0, 5000) : (s ?? null))), // silent truncate at 5000 chars
 });
-export type AddToLibraryInput = z.infer<typeof addToLibrarySchema>;
+// AddToLibraryInput uses z.input<> so callers can omit synopsis (optional before transform)
+export type AddToLibraryInput = z.input<typeof addToLibrarySchema>;
 
 export const updateEntryStatusSchema = z.object({
   id: z.string().uuid(),
