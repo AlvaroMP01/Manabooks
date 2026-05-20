@@ -18,6 +18,19 @@ export function seedBookCoverPalette(title: string): readonly [string, string, s
 
 export type MBStatusKey = "to_read" | "reading" | "read";
 
+const READING_DATE_FORMATTER = new Intl.DateTimeFormat("es-AR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+export function formatReadingDate(iso: string | null): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return READING_DATE_FORMATTER.format(d);
+}
+
 export function dbStatusToMBKey(status: EntryStatus): MBStatusKey {
   switch (status) {
     case "to_read":

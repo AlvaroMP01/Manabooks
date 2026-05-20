@@ -81,6 +81,7 @@ export async function updateEntryStatus(input: UpdateEntryStatusInput): Promise<
 
   if (error) return { ok: false, code: "unknown", message: error.message };
   revalidatePath("/library");
+  revalidatePath(`/library/${parsed.data.id}`);
   return { ok: true, data: undefined };
 }
 
@@ -95,6 +96,7 @@ export async function deleteEntry(input: DeleteEntryInput): Promise<ActionResult
   const { error } = await supabase.from("library_entries").delete().eq("id", parsed.data.id);
   if (error) return { ok: false, code: "unknown", message: error.message };
   revalidatePath("/library");
+  revalidatePath(`/library/${parsed.data.id}`);
   return { ok: true, data: undefined };
 }
 
@@ -156,5 +158,6 @@ export async function updateProgress(
   if (updateError) return { ok: false, code: "unknown", message: updateError.message };
 
   revalidatePath("/library");
+  revalidatePath(`/library/${parsed.data.id}`);
   return { ok: true, data: { promptComplete: transition.promptComplete } };
 }
