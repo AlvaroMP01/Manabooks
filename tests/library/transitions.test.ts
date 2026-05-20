@@ -1,15 +1,19 @@
 import { describe, expect, it } from "vitest";
 
-import { computeProgressTransition, computeTimestamps } from "@/lib/library/transitions";
+import { computeProgressTransition, computeStatusChange } from "@/lib/library/transitions";
 
 const FIXED_TS = "2026-01-01T00:00:00.000Z";
 
-describe("computeTimestamps", () => {
+describe("computeStatusChange", () => {
   it("sets startedAt when transitioning to reading and startedAt is null", () => {
     const before = Date.now();
-    const result = computeTimestamps("to_read", "reading", {
+    const result = computeStatusChange({
+      prevStatus: "to_read",
+      nextStatus: "reading",
       startedAt: null,
       finishedAt: null,
+      currentPage: 0,
+      totalPages: null,
     });
     const after = Date.now();
 
@@ -18,12 +22,17 @@ describe("computeTimestamps", () => {
     expect(ts).toBeGreaterThanOrEqual(before);
     expect(ts).toBeLessThanOrEqual(after);
     expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(0);
   });
 
   it("does NOT change startedAt when transitioning to reading and startedAt is already set", () => {
-    const result = computeTimestamps("to_read", "reading", {
+    const result = computeStatusChange({
+      prevStatus: "to_read",
+      nextStatus: "reading",
       startedAt: FIXED_TS,
       finishedAt: null,
+      currentPage: 0,
+      totalPages: null,
     });
     expect(result.startedAt).toBe(FIXED_TS);
     expect(result.finishedAt).toBeNull();
@@ -31,9 +40,13 @@ describe("computeTimestamps", () => {
 
   it("sets finishedAt when transitioning to read and finishedAt is null", () => {
     const before = Date.now();
-    const result = computeTimestamps("reading", "read", {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "read",
       startedAt: FIXED_TS,
       finishedAt: null,
+      currentPage: 50,
+      totalPages: 200,
     });
     const after = Date.now();
 
@@ -45,38 +58,115 @@ describe("computeTimestamps", () => {
 
   it("does NOT change finishedAt when transitioning to read and finishedAt is already set", () => {
     const finishedTs = "2026-02-01T10:00:00.000Z";
-    const result = computeTimestamps("reading", "read", {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "read",
       startedAt: FIXED_TS,
       finishedAt: finishedTs,
+      currentPage: 200,
+      totalPages: 200,
     });
     expect(result.finishedAt).toBe(finishedTs);
   });
 
   it("does NOT clear timestamps on reverse transition (read -> to_read)", () => {
-    const result = computeTimestamps("read", "to_read", {
+    const result = computeStatusChange({
+      prevStatus: "read",
+      nextStatus: "to_read",
       startedAt: FIXED_TS,
       finishedAt: "2026-03-01T00:00:00.000Z",
+      currentPage: 200,
+      totalPages: 200,
     });
     expect(result.startedAt).toBe(FIXED_TS);
     expect(result.finishedAt).toBe("2026-03-01T00:00:00.000Z");
   });
 
   it("does NOT clear timestamps on reverse transition (reading -> to_read)", () => {
-    const result = computeTimestamps("reading", "to_read", {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "to_read",
       startedAt: FIXED_TS,
       finishedAt: null,
+      currentPage: 50,
+      totalPages: 200,
     });
     expect(result.startedAt).toBe(FIXED_TS);
     expect(result.finishedAt).toBeNull();
   });
 
   it("to_read -> to_read keeps both null", () => {
-    const result = computeTimestamps("to_read", "to_read", {
+    const result = computeStatusChange({
+      prevStatus: "to_read",
+      nextStatus: "to_read",
       startedAt: null,
       finishedAt: null,
+      currentPage: 0,
+      totalPages: null,
     });
     expect(result.startedAt).toBeNull();
     expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(0);
+  });
+
+  it("reading -> read with partial progress: bumps currentPage to totalPages", () => {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "read",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 30,
+      totalPages: 200,
+    });
+    expect(result.currentPage).toBe(200);
+  });
+
+  it("to_read -> read with partial progress: bumps currentPage to totalPages", () => {
+    const result = computeStatusChange({
+      prevStatus: "to_read",
+      nextStatus: "read",
+      startedAt: null,
+      finishedAt: null,
+      currentPage: 0,
+      totalPages: 350,
+    });
+    expect(result.currentPage).toBe(350);
+  });
+
+  it("reading -> read with currentPage already at totalPages: leaves currentPage untouched", () => {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "read",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 200,
+      totalPages: 200,
+    });
+    expect(result.currentPage).toBe(200);
+  });
+
+  it("reading -> read with totalPages=null: cannot auto-complete, leaves currentPage untouched", () => {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "read",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 30,
+      totalPages: null,
+    });
+    expect(result.currentPage).toBe(30);
+  });
+
+  it("reading -> reading with partial progress: leaves currentPage untouched", () => {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "reading",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 30,
+      totalPages: 200,
+    });
+    expect(result.currentPage).toBe(30);
   });
 });
 

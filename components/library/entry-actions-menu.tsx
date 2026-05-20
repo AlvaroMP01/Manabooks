@@ -1,6 +1,7 @@
 "use client";
 
 import { MoreHorizontalIcon } from "lucide-react";
+import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -74,7 +75,14 @@ export function EntryActionsMenu({ entry }: Props) {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-          {/* Progress item — visible for all statuses, positioned first */}
+          {/* Detail link — first item for quick navigation */}
+          <DropdownMenuItem>
+            <Link href={`/library/${entry.id}`} className="w-full">
+              Ver detalle
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {/* Progress item — visible for all statuses */}
           <DropdownMenuItem onClick={() => setProgressDialogOpen(true)}>
             Actualizar progreso
           </DropdownMenuItem>

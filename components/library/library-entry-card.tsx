@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
@@ -30,36 +32,42 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
           NOW
         </MBSticker>
       )}
-      <MBBookCover
-        title={entry.title}
-        author={entry.authors[0] ?? ""}
-        thumbnail={entry.thumbnailUrl}
-        width={120}
-        height={180}
-        tilt={-2}
-      />
-      <div className="w-full text-center">
-        <h3
-          className="line-clamp-2"
-          style={{
-            fontFamily: "var(--font-sticker)",
-            fontSize: 14,
-            color: "#3B1F47",
-            margin: 0,
-            lineHeight: 1.1,
-          }}
-        >
-          {entry.title}
-        </h3>
-        {entry.authors[0] && (
-          <p
-            className="mt-1 line-clamp-1"
-            style={{ fontFamily: "var(--font-hand)", fontSize: 14, color: "#8B3FE0" }}
+      <Link
+        href={`/library/${entry.id}`}
+        aria-label={`Ver detalle de ${entry.title}`}
+        className="focus-visible:ring-mb-pink-deep flex flex-col items-center gap-3 rounded-lg no-underline focus-visible:ring-2"
+      >
+        <MBBookCover
+          title={entry.title}
+          author={entry.authors[0] ?? ""}
+          thumbnail={entry.thumbnailUrl}
+          width={120}
+          height={180}
+          tilt={-2}
+        />
+        <div className="w-full text-center">
+          <h3
+            className="line-clamp-2"
+            style={{
+              fontFamily: "var(--font-sticker)",
+              fontSize: 14,
+              color: "#3B1F47",
+              margin: 0,
+              lineHeight: 1.1,
+            }}
           >
-            {entry.authors[0]}
-          </p>
-        )}
-      </div>
+            {entry.title}
+          </h3>
+          {entry.authors[0] && (
+            <p
+              className="mt-1 line-clamp-1"
+              style={{ fontFamily: "var(--font-hand)", fontSize: 14, color: "#8B3FE0" }}
+            >
+              {entry.authors[0]}
+            </p>
+          )}
+        </div>
+      </Link>
       {/* Progress bar — only when reading AND totalPages is known */}
       {entry.status === "reading" && entry.totalPages !== null && (
         <div className="w-full space-y-1">
