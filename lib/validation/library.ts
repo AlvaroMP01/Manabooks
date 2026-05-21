@@ -10,6 +10,12 @@ export const addToLibrarySchema = z.object({
   thumbnailUrl: z.string().url().nullable().optional(),
   status: entryStatusSchema.optional(),
   totalPages: z.number().int().min(1).nullable().optional(),
+  genre: z
+    .string()
+    .max(200)
+    .nullable()
+    .optional()
+    .transform((s) => (typeof s === "string" ? s.trim().slice(0, 200) || null : (s ?? null))),
   synopsis: z
     .string()
     .nullable()
@@ -29,6 +35,12 @@ export const deleteEntrySchema = z.object({
   id: z.string().uuid(),
 });
 export type DeleteEntryInput = z.infer<typeof deleteEntrySchema>;
+
+export const updateEntryRatingSchema = z.object({
+  id: z.string().uuid(),
+  rating: z.number().int().min(1).max(5).nullable(),
+});
+export type UpdateEntryRatingInput = z.infer<typeof updateEntryRatingSchema>;
 
 export const updateProgressSchema = z
   .object({
