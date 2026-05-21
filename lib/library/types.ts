@@ -18,6 +18,9 @@ export type LibraryEntry = {
   currentPage: number;
   totalPages: number | null;
   synopsis: string | null;
+  rating: number | null;
+  genre: string | null;
+  lastProgressAt: string | null;
 };
 
 export function rowToEntry(row: Row): LibraryEntry {
@@ -35,5 +38,8 @@ export function rowToEntry(row: Row): LibraryEntry {
     currentPage: row.current_page,
     totalPages: row.total_pages,
     synopsis: row.synopsis,
+    rating: row.rating,
+    genre: row.genre,
+    lastProgressAt: row.last_progress_at,
   };
 }

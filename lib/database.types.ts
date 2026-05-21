@@ -20,8 +20,11 @@ export type Database = {
           created_at: string
           current_page: number
           finished_at: string | null
+          genre: string | null
           google_volume_id: string
           id: string
+          last_progress_at: string | null
+          rating: number | null
           started_at: string | null
           status: Database["public"]["Enums"]["entry_status"]
           synopsis: string | null
@@ -36,8 +39,11 @@ export type Database = {
           created_at?: string
           current_page?: number
           finished_at?: string | null
+          genre?: string | null
           google_volume_id: string
           id?: string
+          last_progress_at?: string | null
+          rating?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["entry_status"]
           synopsis?: string | null
@@ -52,8 +58,11 @@ export type Database = {
           created_at?: string
           current_page?: number
           finished_at?: string | null
+          genre?: string | null
           google_volume_id?: string
           id?: string
+          last_progress_at?: string | null
+          rating?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["entry_status"]
           synopsis?: string | null
@@ -62,6 +71,27 @@ export type Database = {
           total_pages?: number | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          updated_at: string
+          user_id: string
+          year_goal: number
+        }
+        Insert: {
+          created_at?: string
+          updated_at?: string
+          user_id: string
+          year_goal?: number
+        }
+        Update: {
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+          year_goal?: number
         }
         Relationships: []
       }

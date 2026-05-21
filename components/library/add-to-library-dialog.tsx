@@ -32,6 +32,7 @@ export function AddToLibraryDialog({ book }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const author = book.authors[0] ?? "Autor desconocido";
+  const normalizedGenre = book.categories[0]?.trim().slice(0, 200) || null;
 
   function handleSubmit() {
     startTransition(async () => {
@@ -43,6 +44,7 @@ export function AddToLibraryDialog({ book }: Props) {
         status,
         totalPages: book.pageCount ?? null,
         synopsis: book.description, // already plain text via mapVolume(); truncated by Zod transform if oversized
+        genre: normalizedGenre,
       });
 
       if (result.ok) {

@@ -18,5 +18,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
   }
 
+  // Best-effort user_profiles row creation. Wrapped in try/catch so any failure
+  // here NEVER blocks the auth redirect — getUserProfile() has a lazy fallback.
+  try {
+    const { data: claimsData } = await supabase.auth.getClaims();
+    const userId = claimsData?.claims?.sub as string | undefined;
+    if (userId) {
+      await supabase
+        .from("user_profiles")
+        .upsert({ user_id: userId }, { onConflict: "user_id", ignoreDuplicates: true });
+    }
+  } catch (err) {
+    console.warn("[auth/callback] user_profiles upsert failed (non-blocking):", err);
+  }
+
   return NextResponse.redirect(`${origin}${next}`);
 }

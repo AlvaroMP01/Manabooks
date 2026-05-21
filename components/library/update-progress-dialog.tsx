@@ -3,9 +3,10 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { updateEntryStatus, updateProgress } from "@/app/(app)/library/_actions";
+import { updateEntryRating, updateEntryStatus, updateProgress } from "@/app/(app)/library/_actions";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBButton } from "@/components/mb/button";
+import { MBHeartRating } from "@/components/mb/heart-rating";
 import {
   Dialog,
   DialogContent,
@@ -16,9 +17,9 @@ import {
 } from "@/components/ui/dialog";
 import type { LibraryEntry } from "@/lib/library/types";
 
-/** UpdateProgressDialog — two-phase dialog for updating reading progress and optionally marking as read. */
+/** UpdateProgressDialog — three-phase dialog for updating reading progress, optionally marking as read, and rating. */
 
-type Phase = "editing" | "awaiting-complete";
+type Phase = "editing" | "awaiting-complete" | "rating";
 
 interface Props {
   entry: LibraryEntry;
@@ -29,6 +30,8 @@ interface Props {
 interface InnerProps extends Props {
   phase: Phase;
   setPhase: (phase: Phase) => void;
+  rating: number;
+  setRating: (rating: number) => void;
 }
 
 function parsePositiveInt(raw: string): number | null {
@@ -36,7 +39,15 @@ function parsePositiveInt(raw: string): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
-function UpdateProgressDialogInner({ entry, open, onOpenChange, phase, setPhase }: InnerProps) {
+function UpdateProgressDialogInner({
+  entry,
+  open,
+  onOpenChange,
+  phase,
+  setPhase,
+  rating,
+  setRating,
+}: InnerProps) {
   const [currentPageStr, setCurrentPageStr] = useState<string>(() =>
     String(entry.currentPage ?? 0)
   );
@@ -83,8 +94,25 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange, phase, setPhase 
         return;
       }
       toast.success("¡Marcado como leído! ♡");
+      setPhase("rating"); // advance to rating phase — do NOT close yet
+    });
+  }
+
+  function handleSaveRating() {
+    if (rating < 1 || rating > 5) return; // guard, shouldn't happen due to disabled button
+    startTransition(async () => {
+      const result = await updateEntryRating({ id: entry.id, rating });
+      if (!result.ok) {
+        toast.error("No se pudo guardar la valoración.");
+        return;
+      }
+      toast.success("¡Gracias por tu valoración! ✦");
       onOpenChange(false);
     });
+  }
+
+  function handleSkipRating() {
+    onOpenChange(false);
   }
 
   function handleClose() {
@@ -94,7 +122,7 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange, phase, setPhase 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false}>
-        {phase === "editing" ? (
+        {phase === "editing" && (
           <>
             <DialogHeader>
               <div className="flex items-start gap-3">
@@ -243,7 +271,9 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange, phase, setPhase 
               </MBButton>
             </DialogFooter>
           </>
-        ) : (
+        )}
+
+        {phase === "awaiting-complete" && (
           <>
             <DialogHeader>
               <DialogTitle
@@ -280,23 +310,69 @@ function UpdateProgressDialogInner({ entry, open, onOpenChange, phase, setPhase 
             </DialogFooter>
           </>
         )}
+
+        {phase === "rating" && (
+          <>
+            <DialogHeader>
+              <DialogTitle
+                style={{ fontFamily: "var(--font-sticker)", fontSize: 16, color: "#3B1F47" }}
+              >
+                ¿Cómo te pareció?
+              </DialogTitle>
+              <DialogDescription
+                style={{ fontFamily: "var(--font-hand)", fontSize: 14, color: "#8B3FE0" }}
+              >
+                Dejale una valoración a &ldquo;{entry.title}&rdquo; ♡
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex justify-center py-2">
+              <MBHeartRating value={rating} onChange={setRating} max={5} size={32} />
+            </div>
+
+            <DialogFooter>
+              <MBButton
+                type="button"
+                color="white"
+                size="sm"
+                onClick={handleSkipRating}
+                disabled={isPending}
+              >
+                Ahora no
+              </MBButton>
+              <MBButton
+                type="button"
+                color="pink"
+                size="sm"
+                onClick={handleSaveRating}
+                disabled={isPending || rating < 1}
+              >
+                {isPending ? "Guardando…" : "Guardar"}
+              </MBButton>
+            </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
 }
 
 export function UpdateProgressDialog(props: Props) {
-  // `phase` lives in the OUTER so it survives inner remounts. The inner remounts when
-  // entry.currentPage / entry.totalPages change (via revalidatePath after updateProgress).
-  // If phase lived inside the inner, that mid-flow remount would reset it back to "editing"
-  // right when the server says "promptComplete=true", killing the "Marcar como leído?" prompt
-  // and stacking it behind a fresh editing dialog.
+  // `phase` and `rating` live in the OUTER so they survive inner remounts. The inner
+  // remounts when entry.currentPage / entry.totalPages change (via revalidatePath after
+  // updateProgress). If these lived inside the inner, that mid-flow remount would reset
+  // them back to defaults, killing the "Marcar como leído?" and "rating" phases.
+  // This is the same outer-phase ownership pattern from commit 00d3905 (PR #18).
   const [phase, setPhase] = useState<Phase>("editing");
+  const [rating, setRating] = useState<number>(0); // 0 = no rating chosen yet
 
-  // Reset to editing when the dialog signals close — covers Cancel, click-outside, Esc,
-  // and post-confirm close. Wraps the caller's onOpenChange instead of being an effect.
+  // Reset to editing (and clear rating) when the dialog signals close — covers Cancel,
+  // click-outside, Esc, and post-confirm close.
   const handleOpenChange = (next: boolean) => {
-    if (!next) setPhase("editing");
+    if (!next) {
+      setPhase("editing");
+      setRating(0);
+    }
     props.onOpenChange(next);
   };
 
@@ -310,6 +386,8 @@ export function UpdateProgressDialog(props: Props) {
       onOpenChange={handleOpenChange}
       phase={phase}
       setPhase={setPhase}
+      rating={rating}
+      setRating={setRating}
     />
   );
 }

@@ -40,6 +40,9 @@ const BASE_ENTRY: LibraryEntry = {
   createdAt: "2026-05-01T00:00:00.000Z",
   updatedAt: "2026-05-01T00:00:00.000Z",
   synopsis: null,
+  rating: null,
+  genre: null,
+  lastProgressAt: null,
 };
 
 describe("EntryHero", () => {

@@ -29,8 +29,8 @@ export function MBHeartRating({
         >
           <MBHeart
             size={size}
-            color={i < value ? color : "#FFFCFE"}
-            outline="var(--color-mb-ink)"
+            color={i < value ? color : "#FFD0E7"}
+            outline="#3B1F47"
           />
         </span>
       ))}

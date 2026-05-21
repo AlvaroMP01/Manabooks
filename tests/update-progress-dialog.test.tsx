@@ -6,10 +6,12 @@ import type { LibraryEntry } from "@/lib/library/types";
 
 const mockUpdateProgress = vi.fn();
 const mockUpdateEntryStatus = vi.fn();
+const mockUpdateEntryRating = vi.fn();
 
 vi.mock("@/app/(app)/library/_actions", () => ({
   updateProgress: (...args: unknown[]) => mockUpdateProgress(...args),
   updateEntryStatus: (...args: unknown[]) => mockUpdateEntryStatus(...args),
+  updateEntryRating: (...args: unknown[]) => mockUpdateEntryRating(...args),
 }));
 
 vi.mock("sonner", () => ({
@@ -38,6 +40,12 @@ vi.mock("@/components/ui/dialog", () => ({
 
 vi.mock("@/components/mb/book-cover", () => ({
   MBBookCover: () => <div data-testid="book-cover" />,
+}));
+
+vi.mock("@/components/mb/heart-rating", () => ({
+  MBHeartRating: ({ value, onChange }: { value?: number; onChange?: (v: number) => void }) => (
+    <div data-testid="heart-rating" data-value={value} onClick={() => onChange?.(3)} />
+  ),
 }));
 
 vi.mock("@/components/mb/button", () => ({
@@ -73,6 +81,9 @@ const BASE_ENTRY: LibraryEntry = {
   createdAt: "2026-05-19T00:00:00.000Z",
   updatedAt: "2026-05-19T00:00:00.000Z",
   synopsis: null,
+  rating: null,
+  genre: null,
+  lastProgressAt: null,
 };
 
 describe("UpdateProgressDialog — phase survives mid-flow remount", () => {
