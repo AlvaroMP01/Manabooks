@@ -4,12 +4,7 @@ import { MBButton } from "@/components/mb/button";
 import { MBCard } from "@/components/mb/card";
 import { MBSparkle } from "@/components/mb/sparkle";
 
-interface HomeEmptyStateProps {
-  name: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function HomeEmptyState(_props: HomeEmptyStateProps) {
+export function HomeEmptyState() {
   return (
     <MBCard
       color="#FFD0E7"

@@ -127,7 +127,7 @@ export default async function HomePage() {
       <HomeTopBar name={data.name} totalCount={data.totalCount} />
 
       {isCompletelyEmpty ? (
-        <HomeEmptyState name={data.name} />
+        <HomeEmptyState />
       ) : (
         <>
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
