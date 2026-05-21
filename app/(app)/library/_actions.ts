@@ -12,6 +12,8 @@ import {
   addToLibrarySchema,
   type DeleteEntryInput,
   deleteEntrySchema,
+  type UpdateEntryRatingInput,
+  updateEntryRatingSchema,
   type UpdateEntryStatusInput,
   updateEntryStatusSchema,
   type UpdateProgressInput,
@@ -40,6 +42,7 @@ export async function addToLibrary(
       status: parsed.data.status ?? "to_read",
       total_pages: parsed.data.totalPages ?? null,
       synopsis: parsed.data.synopsis ?? null, // already truncated by Zod transform
+      genre: parsed.data.genre ?? null, // already trim+truncated by Zod transform
     })
     .select("id")
     .single();
@@ -147,9 +150,19 @@ export async function updateProgress(
   // 6. Build a single typed UPDATE payload — touch status/started_at/finished_at only when auto-transition fires.
   type LibraryEntriesUpdate = Database["public"]["Tables"]["library_entries"]["Update"];
 
+  // Decide whether this update represents progress on a reading entry.
+  // last_progress_at MUST bump ONLY when:
+  //   * the entry is currently in "reading" status, AND
+  //   * the page count actually changed.
+  // Auto-transitions (to_read → reading) are NOT counted here — those are
+  // the FIRST progress event but on the row's PREVIOUS status.
+  const shouldBumpProgressTimestamp =
+    current.status === "reading" && parsed.data.currentPage !== current.current_page;
+
   const update: LibraryEntriesUpdate = {
     current_page: parsed.data.currentPage,
     total_pages: effectiveTotalPages,
+    ...(shouldBumpProgressTimestamp ? { last_progress_at: new Date().toISOString() } : {}),
     ...(transition.autoStatus !== null
       ? {
           status: transition.autoStatus,
@@ -169,4 +182,26 @@ export async function updateProgress(
   revalidatePath("/library");
   revalidatePath(`/library/${parsed.data.id}`);
   return { ok: true, data: { promptComplete: transition.promptComplete } };
+}
+
+export async function updateEntryRating(
+  input: UpdateEntryRatingInput
+): Promise<ActionResult> {
+  const parsed = updateEntryRatingSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, code: "invalid_input" };
+
+  const supabase = await createClient();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  if (!claimsData?.claims) return { ok: false, code: "unauthorized" };
+
+  const { error } = await supabase
+    .from("library_entries")
+    .update({ rating: parsed.data.rating })
+    .eq("id", parsed.data.id);
+
+  if (error) return { ok: false, code: "unknown", message: error.message };
+
+  revalidatePath("/library");
+  revalidatePath(`/library/${parsed.data.id}`);
+  return { ok: true, data: undefined };
 }
