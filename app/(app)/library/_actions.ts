@@ -94,6 +94,8 @@ export async function updateEntryStatus(input: UpdateEntryStatusInput): Promise<
   if (error) return { ok: false, code: "unknown", message: error.message };
   revalidatePath("/library");
   revalidatePath(`/library/${parsed.data.id}`);
+  revalidatePath("/progress");
+  revalidatePath("/");
   return { ok: true, data: undefined };
 }
 
@@ -181,6 +183,8 @@ export async function updateProgress(
 
   revalidatePath("/library");
   revalidatePath(`/library/${parsed.data.id}`);
+  revalidatePath("/progress");
+  revalidatePath("/");
   return { ok: true, data: { promptComplete: transition.promptComplete } };
 }
 
@@ -203,5 +207,7 @@ export async function updateEntryRating(
 
   revalidatePath("/library");
   revalidatePath(`/library/${parsed.data.id}`);
+  revalidatePath("/progress");
+  revalidatePath("/");
   return { ok: true, data: undefined };
 }

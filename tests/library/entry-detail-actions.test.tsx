@@ -45,6 +45,12 @@ vi.mock("@/components/library/update-progress-dialog", () => ({
   UpdateProgressDialog: () => <div data-testid="update-progress-dialog" />,
 }));
 
+const mockOpenDialog = vi.fn();
+vi.mock("@/components/library/progress-dialog-provider", () => ({
+  useProgressDialog: () => ({ openDialog: mockOpenDialog }),
+  ProgressDialogProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 const BASE_ENTRY: LibraryEntry = {
   id: "entry-001",
   googleVolumeId: "vol-001",

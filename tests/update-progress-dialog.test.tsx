@@ -14,6 +14,7 @@ vi.mock("@/app/(app)/library/_actions", () => ({
   updateEntryRating: (...args: unknown[]) => mockUpdateEntryRating(...args),
 }));
 
+
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),

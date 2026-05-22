@@ -4,6 +4,7 @@ const TABS = [
   { label: "Inicio", href: "/", icon: "⌂" },
   { label: "Biblioteca", href: "/library", icon: "✦" },
   { label: "Buscar", href: "/library/search", icon: "⌕" },
+  { label: "Progreso", href: "/progress", icon: "◐" },
   { label: "Perfil", href: "/profile", icon: "☻" },
 ];
 
