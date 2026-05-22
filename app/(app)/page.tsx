@@ -1,86 +1,150 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { MBButton } from "@/components/mb/button";
-import { MBCard } from "@/components/mb/card";
-import { MBSparkle } from "@/components/mb/sparkle";
-import { extractDisplayName } from "@/lib/auth/display-name";
+import { CurrentlyReadingCard } from "@/components/home/currently-reading-card";
+import { GoalCard } from "@/components/home/goal-card";
+import { HomeEmptyState } from "@/components/home/home-empty-state";
+import { HomeTopBar } from "@/components/home/home-top-bar";
+import { RecentReadsCard } from "@/components/home/recent-reads-card";
+import { TBRPileCard } from "@/components/home/tbr-pile-card";
+import { extractDisplayName, extractEmail } from "@/lib/auth/display-name";
+import { getUserProfile } from "@/lib/library/profile";
+import { getCurrentStreak } from "@/lib/library/streak";
+import { type LibraryEntry, rowToEntry } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
+
+// Local view-model — not exported
+type HomeData = {
+  name: string;
+  totalCount: number;
+  currentReading: LibraryEntry[];
+  recentReads: LibraryEntry[];
+  tbrEntries: LibraryEntry[];
+  yearRead: number;
+  monthRead: number;
+  yearGoal: number;
+  streak: number;
+};
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const displayName = extractDisplayName(data?.claims);
-  const email = (data?.claims?.["email"] as string | undefined) ?? undefined;
+  const { data: authData } = await supabase.auth.getClaims();
+
+  if (!authData?.claims) {
+    redirect("/login");
+  }
+
+  const userId = authData.claims.sub as string;
+
+  // UTC-aligned year and month starts — matches streak.ts UTC convention
+  const now = new Date();
+  const yearStartUTC = new Date(Date.UTC(now.getUTCFullYear(), 0, 1)).toISOString();
+  const monthStartUTC = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+  ).toISOString();
+
+  const [
+    totalCountRes,
+    currentReadingRes,
+    recentReadsRes,
+    tbrRes,
+    yearReadRes,
+    monthReadRes,
+    profile,
+    streakResult,
+  ] = await Promise.all([
+    supabase
+      .from("library_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId),
+    supabase
+      .from("library_entries")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "reading")
+      .order("updated_at", { ascending: false })
+      .limit(2),
+    supabase
+      .from("library_entries")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "read")
+      .order("finished_at", { ascending: false, nullsFirst: false })
+      .limit(5),
+    supabase
+      .from("library_entries")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "to_read")
+      .order("created_at", { ascending: false })
+      .limit(4),
+    supabase
+      .from("library_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("status", "read")
+      .gte("finished_at", yearStartUTC),
+    supabase
+      .from("library_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("status", "read")
+      .gte("finished_at", monthStartUTC),
+    getUserProfile(supabase, userId),
+    getCurrentStreak(supabase, userId),
+  ]);
+
+  // Unwrap counts and map rows
+  const totalCount = totalCountRes.count ?? 0;
+  const yearRead = yearReadRes.count ?? 0;
+  const monthRead = monthReadRes.count ?? 0;
+  const currentReading = (currentReadingRes.data ?? []).map(rowToEntry);
+  const recentReads = (recentReadsRes.data ?? []).map(rowToEntry);
+  const tbrEntries = (tbrRes.data ?? []).map(rowToEntry);
+  const yearGoal = profile.yearGoal;
+  const streak = streakResult.currentStreak;
+
+  // Display name — resolved from claims directly (getUserProfile only returns yearGoal)
+  const displayName = extractDisplayName(authData.claims);
+  const email = extractEmail(authData.claims);
   const name = displayName ?? (email ? email.split("@")[0] : null) ?? "lectora";
 
+  const data: HomeData = {
+    name,
+    totalCount,
+    currentReading,
+    recentReads,
+    tbrEntries,
+    yearRead,
+    monthRead,
+    yearGoal,
+    streak,
+  };
+
+  const isCompletelyEmpty = data.totalCount === 0;
+
   return (
-    <div className="flex max-w-3xl flex-col gap-6">
-      <header className="relative">
-        <MBSparkle size={28} twinkle aria-hidden="true" className="absolute -top-1 left-24" />
-        <MBSparkle size={18} twinkle aria-hidden="true" className="absolute top-10 -left-4" />
-        <h1
-          style={{
-            fontFamily: "var(--font-curly)",
-            fontSize: 52,
-            color: "#FF3D9A",
-            margin: 0,
-            lineHeight: 0.95,
-            WebkitTextStroke: "2.5px #3B1F47",
-            paintOrder: "stroke fill",
-            filter: "drop-shadow(3px 4px 0 #3B1F47)",
-          }}
-        >
-          Hola, {name} ✦
-        </h1>
-        <p
-          style={{
-            fontFamily: "var(--font-hand)",
-            fontSize: 22,
-            color: "#8B3FE0",
-            marginTop: 12,
-          }}
-        >
-          Bienvenida a tu rincón girlypop ♡
-        </p>
-      </header>
+    <div className="flex flex-col gap-5">
+      <HomeTopBar name={data.name} totalCount={data.totalCount} />
 
-      <MBCard color="#FFD0E7" radius={22} className="flex flex-col gap-4 p-6">
-        <p
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: 16,
-            color: "#3B1F47",
-            margin: 0,
-          }}
-        >
-          Empieza añadiendo libros a tu biblioteca y márcalos como leídos, en lectura o por leer.
-          Las funcionalidades de valoración y notas llegan pronto ✦
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/library/search">
-            <MBButton color="pink" size="md">
-              Buscar libros ✦
-            </MBButton>
-          </Link>
-          <Link href="/library">
-            <MBButton color="purple" size="md">
-              → Ir a mi biblioteca
-            </MBButton>
-          </Link>
-        </div>
-        <p
-          style={{
-            fontFamily: "var(--font-hand)",
-            fontSize: 16,
-            color: "#6E4A7A",
-            margin: 0,
-          }}
-        >
-          Pst, puedes añadir tu primer libro buscándolo arriba ✦
-        </p>
-      </MBCard>
-
-      <MBSparkle size={22} twinkle aria-hidden="true" className="self-end opacity-60" />
+      {isCompletelyEmpty ? (
+        <HomeEmptyState />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
+            <CurrentlyReadingCard entries={data.currentReading} />
+            <GoalCard
+              yearGoal={data.yearGoal}
+              yearRead={data.yearRead}
+              monthRead={data.monthRead}
+              streak={data.streak}
+            />
+          </div>
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
+            <RecentReadsCard entries={data.recentReads} />
+            <TBRPileCard entries={data.tbrEntries} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

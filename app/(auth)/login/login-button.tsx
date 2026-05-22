@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { MBButton } from "@/components/mb/button";
 import { createClient } from "@/lib/supabase/client";
@@ -10,14 +11,25 @@ export function LoginButton() {
   const [pending, setPending] = useState(false);
   const supabase = createClient();
 
-  function handleLogin() {
+  async function handleLogin() {
     setPending(true);
-    supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (error) {
+        console.error("[login] signInWithOAuth error:", error);
+        toast.error(`No se pudo iniciar sesión: ${error.message}`);
+        setPending(false);
+      }
+      // On success, the browser navigates away — leave `pending` true.
+    } catch (err) {
+      console.error("[login] unexpected error:", err);
+      toast.error("Error inesperado al iniciar sesión.");
+      setPending(false);
+    }
   }
 
   return (
