@@ -58,10 +58,12 @@ export function RecentReadsCard({ entries }: RecentReadsCardProps) {
         ) : (
           <div className="flex flex-row gap-3 overflow-x-auto pb-1">
             {entries.map((entry, i) => (
-              <div
+              <Link
                 key={entry.id}
-                className="flex flex-col items-center gap-1"
-                style={{ flexShrink: 0 }}
+                href={`/library/${entry.id}`}
+                aria-label={`Ver detalle de ${entry.title}`}
+                className="focus-visible:ring-mb-pink-deep flex flex-col items-center gap-1 rounded-lg no-underline transition-opacity hover:opacity-80 focus-visible:ring-2"
+                style={{ flexShrink: 0, color: "inherit" }}
               >
                 {/* Mobile cover */}
                 <MBBookCover
@@ -120,12 +122,12 @@ export function RecentReadsCard({ entries }: RecentReadsCardProps) {
                     <MBHeart
                       key={j}
                       size={11}
-                      color={j < (entry.rating ?? 0) ? "#FF8FB9" : "#FFD0E7"}
+                      color={j < (entry.rating ?? 0) ? "#FF3D9A" : "#FFD0E7"}
                       outline="#3B1F47"
                     />
                   ))}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

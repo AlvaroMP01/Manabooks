@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
 import { MBSticker } from "@/components/mb/sticker";
@@ -9,7 +11,7 @@ interface TBRPileCardProps {
 
 export function TBRPileCard({ entries }: TBRPileCardProps) {
   return (
-    <MBCard color="#FFFCFE" radius={22} className="p-5 lg:p-6">
+    <MBCard color="#CDEDF6" radius={22} className="p-5 lg:p-6">
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -44,7 +46,13 @@ export function TBRPileCard({ entries }: TBRPileCardProps) {
         ) : (
           <div className="flex flex-col gap-3">
             {entries.map((entry, idx) => (
-              <div key={entry.id} className="flex items-center gap-3">
+              <Link
+                key={entry.id}
+                href={`/library/${entry.id}`}
+                aria-label={`Ver detalle de ${entry.title}`}
+                className="focus-visible:ring-mb-pink-deep flex items-center gap-3 rounded-lg no-underline transition-opacity hover:opacity-80 focus-visible:ring-2"
+                style={{ color: "inherit" }}
+              >
                 {/* Rank */}
                 <span
                   style={{
@@ -98,7 +106,7 @@ export function TBRPileCard({ entries }: TBRPileCardProps) {
                     {entry.authors[0] ?? ""}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

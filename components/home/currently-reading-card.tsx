@@ -19,7 +19,7 @@ export function CurrentlyReadingCard({ entries }: CurrentlyReadingCardProps) {
   const secondary = entries[1];
 
   return (
-    <MBCard color="#FFF1F8" radius={22} className="p-5 lg:p-6">
+    <MBCard color="#FFFCFE" radius={22} className="p-5 lg:p-6">
       <div className="flex flex-col gap-4">
         <h2
           style={{

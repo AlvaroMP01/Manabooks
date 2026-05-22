@@ -68,7 +68,7 @@ export function GoalCard({ yearGoal, yearRead, monthRead, streak }: GoalCardProp
             <MBHeart
               key={i}
               size={18}
-              color={i < filledCount ? "#FF8FB9" : "#FFD0E7"}
+              color={i < filledCount ? "#FF3D9A" : "#FFD0E7"}
               outline="#3B1F47"
             />
           ))}
