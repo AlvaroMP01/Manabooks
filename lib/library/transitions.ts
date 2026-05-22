@@ -33,6 +33,15 @@ export function computeStatusChange(input: StatusChangeInput): StatusChangeResul
     nextCurrentPage = totalPages;
   }
 
+  // read → paused | abandoned clears finishedAt to avoid "finished but paused" state.
+  // Mirrors the existing rule 1b for read → reading in computeProgressTransition.
+  if (
+    input.prevStatus === "read" &&
+    (nextStatus === "paused" || nextStatus === "abandoned")
+  ) {
+    finishedAt = null;
+  }
+
   return { startedAt, finishedAt, currentPage: nextCurrentPage };
 }
 
@@ -67,6 +76,12 @@ export function computeProgressTransition(
   if (prevStatus === "to_read" && currentPage > 0) {
     autoStatus = "reading";
     startedAt = currentStartedAt ?? now;
+  }
+
+  // Rule 1c: paused/abandoned → reading on forward progress (re-engagement).
+  // Preserves startedAt — do not reset on re-engagement. Does not set finishedAt.
+  if ((prevStatus === "paused" || prevStatus === "abandoned") && currentPage > 0) {
+    autoStatus = "reading";
   }
 
   // Rule 1b: auto-transition read → reading on backward progress (re-read scenario).
