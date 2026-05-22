@@ -1,8 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { LibraryEmptyState } from "@/components/library/library-empty-state";
-import { LibraryEntryCard } from "@/components/library/library-entry-card";
 import { LibraryFilterPills } from "@/components/library/library-filter-pills";
+import { LibrarySearchableGrid } from "@/components/library/library-searchable-grid";
 import { MBSparkle } from "@/components/mb/sparkle";
 import type { Database } from "@/lib/database.types";
 import type { EntryStatus } from "@/lib/library/types";
@@ -78,16 +78,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Sear
       </header>
       <LibraryFilterPills counts={counts} current={filter} />
       {entries.length > 0 ? (
-        <ul
-          role="list"
-          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-        >
-          {entries.map((entry) => (
-            <li key={entry.id}>
-              <LibraryEntryCard entry={entry} />
-            </li>
-          ))}
-        </ul>
+        <LibrarySearchableGrid entries={entries} />
       ) : (
         <LibraryEmptyState />
       )}
