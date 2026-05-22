@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: "Inicio", href: "/", icon: "⌂" },
   { label: "Mi biblioteca", href: "/library", icon: "✦" },
   { label: "Buscar", href: "/library/search", icon: "⌕" },
+  { label: "Progreso", href: "/progress", icon: "◐" },
   { label: "Mi perfil", href: "/profile", icon: "☻" },
 ];
 
