@@ -92,10 +92,14 @@ export async function updateEntryStatus(input: UpdateEntryStatusInput): Promise<
     .eq("id", parsed.data.id);
 
   if (error) return { ok: false, code: "unknown", message: error.message };
+  // NOTE: deliberately NOT revalidating "/" or "/progress" here.
+  // updateEntryStatus is called mid-flow inside UpdateProgressDialog (after the user
+  // confirms "Marcar como leído"). Revalidating those routes would unmount the dialog's
+  // host (CurrentlyReadingCard / ReadingRow) because the entry transitions out of
+  // "reading", killing the subsequent rating phase. The dialog calls router.refresh()
+  // on close to bring the host pages up to date once the flow ends.
   revalidatePath("/library");
   revalidatePath(`/library/${parsed.data.id}`);
-  revalidatePath("/progress");
-  revalidatePath("/");
   return { ok: true, data: undefined };
 }
 

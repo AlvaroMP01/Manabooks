@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { updateEntryRating, updateEntryStatus, updateProgress } from "@/app/(app)/library/_actions";
@@ -367,13 +368,28 @@ export function UpdateProgressDialog(props: Props) {
   const initialPhase = props.initialPhase ?? "editing";
   const [phase, setPhase] = useState<Phase>(initialPhase);
   const [rating, setRating] = useState<number>(0); // 0 = no rating chosen yet
+  const router = useRouter();
+
+  // Sync phase to initialPhase when the dialog opens or initialPhase changes.
+  // `useState(initialPhase)` only takes the initial value on mount, so when callers
+  // (e.g. ReadingRow) flip initialPhase + open at the same time, this effect catches it.
+  useEffect(() => {
+    if (props.open) {
+      setPhase(initialPhase);
+      setRating(0);
+    }
+  }, [props.open, initialPhase]);
 
   // Reset to initialPhase (and clear rating) when the dialog signals close — covers Cancel,
-  // click-outside, Esc, and post-confirm close.
+  // click-outside, Esc, and post-confirm close. router.refresh() ensures the host page
+  // (Home, /progress, /library) re-fetches after the dialog flow completes — important
+  // because we no longer revalidatePath('/') in updateEntryStatus (that would unmount
+  // the host mid-flow and kill the rating phase).
   const handleOpenChange = (next: boolean) => {
     if (!next) {
       setPhase(initialPhase);
       setRating(0);
+      router.refresh();
     }
     props.onOpenChange(next);
   };

@@ -14,6 +14,11 @@ vi.mock("@/app/(app)/library/_actions", () => ({
   updateEntryRating: (...args: unknown[]) => mockUpdateEntryRating(...args),
 }));
 
+const mockRouterRefresh = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: mockRouterRefresh }),
+}));
+
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),
