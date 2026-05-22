@@ -13,6 +13,16 @@ const STATUS_LABELS: Record<EntryStatus, string> = {
   to_read: "marcar como por leer",
   reading: "marcar como leyendo",
   read: "marcar como leído",
+  paused: "marcar como pausado",
+  abandoned: "marcar como abandonado",
+};
+
+const RELEVANT_NEXT_STATUSES: Record<EntryStatus, EntryStatus[]> = {
+  to_read: ["reading", "read", "abandoned"],
+  reading: ["read", "paused", "abandoned"],
+  read: ["reading", "paused", "abandoned"],
+  paused: ["reading", "read", "abandoned"],
+  abandoned: ["reading", "read"],
 };
 
 export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
@@ -46,16 +56,14 @@ export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
     });
   }
 
-  const otherStatuses = (["to_read", "reading", "read"] as EntryStatus[]).filter(
-    (s) => s !== optimisticStatus
-  );
+  const nextStatuses = RELEVANT_NEXT_STATUSES[optimisticStatus];
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       <MBButton color="pink" onClick={() => openDialog(entry)} disabled={isPending}>
         actualizar progreso
       </MBButton>
-      {otherStatuses.map((s) => (
+      {nextStatuses.map((s) => (
         <MBButton key={s} color="purple" onClick={() => handleStatusChange(s)} disabled={isPending}>
           {STATUS_LABELS[s]}
         </MBButton>

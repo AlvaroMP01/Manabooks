@@ -33,6 +33,8 @@ export default async function ProfilePage() {
     to_read: rows?.filter((row) => row.status === "to_read").length ?? 0,
     reading: rows?.filter((row) => row.status === "reading").length ?? 0,
     read: rows?.filter((row) => row.status === "read").length ?? 0,
+    paused: rows?.filter((row) => row.status === "paused").length ?? 0,
+    abandoned: rows?.filter((row) => row.status === "abandoned").length ?? 0,
   };
 
   return (
