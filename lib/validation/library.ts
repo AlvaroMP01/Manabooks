@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const entryStatusSchema = z.enum(["to_read", "reading", "read"]);
+export const entryStatusSchema = z.enum(["to_read", "reading", "read", "paused", "abandoned"]);
 export type EntryStatusInput = z.infer<typeof entryStatusSchema>;
 
 export const addToLibrarySchema = z.object({
