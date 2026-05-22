@@ -13,7 +13,7 @@ export function GoalCard({ yearGoal, yearRead, monthRead, streak }: GoalCardProp
   const filledCount = Math.min(yearRead, 52);
 
   return (
-    <MBCard color="#B8F5D9" radius={22} className="p-5 lg:p-6">
+    <MBCard color="#FFD0E7" radius={22} className="p-5 lg:p-6">
       <div className="flex flex-col gap-4">
         {/* Eyebrow */}
         <p
