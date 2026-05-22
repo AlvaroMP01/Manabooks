@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-import { UpdateProgressDialog } from "@/components/library/update-progress-dialog";
+import { useProgressDialog } from "@/components/library/progress-dialog-provider";
 import { MBButton } from "@/components/mb/button";
 import type { LibraryEntry } from "@/lib/library/types";
 
@@ -10,14 +8,12 @@ interface ProgressCTAProps {
   entry: LibraryEntry;
 }
 
+/** ProgressCTA — opens the global UpdateProgressDialog for the given entry. */
 export function ProgressCTA({ entry }: ProgressCTAProps) {
-  const [open, setOpen] = useState(false);
+  const { openDialog } = useProgressDialog();
   return (
-    <>
-      <MBButton size="sm" color="pink" onClick={() => setOpen(true)}>
-        ＋ Actualizar progreso
-      </MBButton>
-      <UpdateProgressDialog entry={entry} open={open} onOpenChange={setOpen} />
-    </>
+    <MBButton size="sm" color="pink" onClick={() => openDialog(entry)}>
+      ＋ Actualizar progreso
+    </MBButton>
   );
 }

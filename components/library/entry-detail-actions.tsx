@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useOptimistic, useState, useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { toast } from "sonner";
 
 import { deleteEntry, updateEntryStatus } from "@/app/(app)/library/_actions";
-import { UpdateProgressDialog } from "@/components/library/update-progress-dialog";
+import { useProgressDialog } from "@/components/library/progress-dialog-provider";
 import { MBButton } from "@/components/mb/button";
 import type { EntryStatus, LibraryEntry } from "@/lib/library/types";
 
@@ -17,9 +17,9 @@ const STATUS_LABELS: Record<EntryStatus, string> = {
 
 export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
   const router = useRouter();
+  const { openDialog } = useProgressDialog();
   const [optimisticStatus, setOptimisticStatus] = useOptimistic(entry.status);
   const [isPending, startTransition] = useTransition();
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   function handleStatusChange(next: EntryStatus) {
     const prev = optimisticStatus;
@@ -52,7 +52,7 @@ export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <MBButton color="pink" onClick={() => setDialogOpen(true)} disabled={isPending}>
+      <MBButton color="pink" onClick={() => openDialog(entry)} disabled={isPending}>
         actualizar progreso
       </MBButton>
       {otherStatuses.map((s) => (
@@ -63,7 +63,6 @@ export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
       <MBButton color="white" onClick={handleDelete} disabled={isPending}>
         eliminar
       </MBButton>
-      <UpdateProgressDialog entry={entry} open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   );
 }

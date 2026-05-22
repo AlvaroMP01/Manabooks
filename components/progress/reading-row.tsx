@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { updateProgress } from "@/app/(app)/library/_actions";
-import { UpdateProgressDialog } from "@/components/library/update-progress-dialog";
+import { useProgressDialog } from "@/components/library/progress-dialog-provider";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBButton } from "@/components/mb/button";
 import { MBCard } from "@/components/mb/card";
@@ -14,14 +14,11 @@ interface ReadingRowProps {
   entry: LibraryEntry;
 }
 
-/** ReadingRow — per-book inline progress updater. Owns dialog state. Client component. */
+/** ReadingRow — per-book inline progress updater. Delegates dialog to the global Provider. */
 export function ReadingRow({ entry }: ReadingRowProps) {
   const [currentPageStr, setCurrentPageStr] = useState(String(entry.currentPage));
   const [isPending, startTransition] = useTransition();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInitialPhase, setDialogInitialPhase] = useState<"editing" | "awaiting-complete">(
-    "editing"
-  );
+  const { openDialog } = useProgressDialog();
 
   const currentPage = Math.max(0, Number.parseInt(currentPageStr, 10) || 0);
   const isSaveDisabled = isPending || currentPageStr === String(entry.currentPage);
@@ -41,15 +38,15 @@ export function ReadingRow({ entry }: ReadingRowProps) {
       toast.success("Progreso actualizado ✦");
 
       if (result.data.promptComplete) {
-        setDialogInitialPhase("awaiting-complete");
-        setDialogOpen(true);
+        // Hand off to the global dialog so the awaiting-complete + rating phases
+        // survive the auto-route-refresh that follows any Server Action.
+        openDialog(entry, "awaiting-complete");
       }
     });
   }
 
   function handleOpenFullDialog() {
-    setDialogInitialPhase("editing");
-    setDialogOpen(true);
+    openDialog(entry, "editing");
   }
 
   return (
@@ -221,12 +218,6 @@ export function ReadingRow({ entry }: ReadingRowProps) {
         </div>
       </MBCard>
 
-      <UpdateProgressDialog
-        entry={entry}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        initialPhase={dialogInitialPhase}
-      />
     </li>
   );
 }
