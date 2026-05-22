@@ -82,16 +82,39 @@ describe("EntryDetailActions", () => {
     expect(screen.getByRole("button", { name: /actualizar progreso/i })).toBeInTheDocument();
   });
 
-  it("renders the two non-current status buttons", () => {
-    // entry.status = "reading" → only "to_read" and "read" buttons should be shown
+  it("renders correct next-status buttons for reading entry (RELEVANT_NEXT_STATUSES[reading])", () => {
+    // entry.status = "reading" → RELEVANT_NEXT_STATUSES.reading = ["read","paused","abandoned"]
     render(<EntryDetailActions entry={BASE_ENTRY} />);
-    expect(screen.getByRole("button", { name: /marcar como por leer/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /marcar como leído/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /marcar como pausado/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /marcar como abandonado/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /marcar como por leer/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /marcar como leyendo/i })).toBeNull();
   });
 
   it("does NOT render the current status as a button", () => {
     render(<EntryDetailActions entry={BASE_ENTRY} />);
     expect(screen.queryByRole("button", { name: /marcar como leyendo/i })).toBeNull();
+  });
+
+  it("renders correct next-status buttons for abandoned entry (RELEVANT_NEXT_STATUSES[abandoned])", () => {
+    const entry = { ...BASE_ENTRY, status: "abandoned" as const };
+    render(<EntryDetailActions entry={entry} />);
+    expect(screen.getByRole("button", { name: /marcar como leyendo/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /marcar como leído/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /marcar como pausado/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /marcar como por leer/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /marcar como abandonado/i })).toBeNull();
+  });
+
+  it("renders correct next-status buttons for to_read entry (RELEVANT_NEXT_STATUSES[to_read])", () => {
+    const entry = { ...BASE_ENTRY, status: "to_read" as const };
+    render(<EntryDetailActions entry={entry} />);
+    expect(screen.getByRole("button", { name: /marcar como leyendo/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /marcar como leído/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /marcar como abandonado/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /marcar como pausado/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /marcar como por leer/i })).toBeNull();
   });
 
   it("calls router.replace('/library') on successful delete", async () => {

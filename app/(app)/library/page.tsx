@@ -9,7 +9,7 @@ import type { EntryStatus } from "@/lib/library/types";
 import { rowToEntry } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
 
-const VALID_STATUSES = new Set<string>(["to_read", "reading", "read"]);
+const VALID_STATUSES = new Set<string>(["to_read", "reading", "read", "paused", "abandoned"]);
 
 type SearchParams = Promise<{ status?: string }>;
 
@@ -22,6 +22,8 @@ async function fetchCounts(supabase: SupabaseClient<Database>) {
     to_read: rows.filter((r) => r.status === "to_read").length,
     reading: rows.filter((r) => r.status === "reading").length,
     read: rows.filter((r) => r.status === "read").length,
+    paused: rows.filter((r) => r.status === "paused").length,
+    abandoned: rows.filter((r) => r.status === "abandoned").length,
   };
 }
 

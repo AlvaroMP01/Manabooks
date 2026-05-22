@@ -168,6 +168,168 @@ describe("computeStatusChange", () => {
     });
     expect(result.currentPage).toBe(30);
   });
+
+  // FR-TR-1: to_read → paused
+  it("to_read -> paused: startedAt null, finishedAt null, currentPage preserved", () => {
+    const result = computeStatusChange({
+      prevStatus: "to_read",
+      nextStatus: "paused",
+      startedAt: null,
+      finishedAt: null,
+      currentPage: 0,
+      totalPages: null,
+    });
+    expect(result.startedAt).toBeNull();
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(0);
+  });
+
+  // FR-TR-2: to_read → abandoned
+  it("to_read -> abandoned: startedAt null, finishedAt null, currentPage preserved", () => {
+    const result = computeStatusChange({
+      prevStatus: "to_read",
+      nextStatus: "abandoned",
+      startedAt: null,
+      finishedAt: null,
+      currentPage: 0,
+      totalPages: null,
+    });
+    expect(result.startedAt).toBeNull();
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(0);
+  });
+
+  // FR-TR-3: reading → paused
+  it("reading -> paused: startedAt preserved, finishedAt null, currentPage preserved", () => {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "paused",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 120,
+      totalPages: 300,
+    });
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(120);
+  });
+
+  // FR-TR-4: reading → abandoned
+  it("reading -> abandoned: startedAt preserved, finishedAt null, currentPage preserved", () => {
+    const result = computeStatusChange({
+      prevStatus: "reading",
+      nextStatus: "abandoned",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 120,
+      totalPages: 300,
+    });
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(120);
+  });
+
+  // FR-TR-9: read → paused — clears finishedAt
+  it("read -> paused: startedAt preserved, finishedAt CLEARED, currentPage preserved", () => {
+    const FINISHED_TS = "2026-04-30T00:00:00.000Z";
+    const result = computeStatusChange({
+      prevStatus: "read",
+      nextStatus: "paused",
+      startedAt: FIXED_TS,
+      finishedAt: FINISHED_TS,
+      currentPage: 300,
+      totalPages: 300,
+    });
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(300);
+  });
+
+  // FR-TR-10: read → abandoned — clears finishedAt
+  it("read -> abandoned: startedAt preserved, finishedAt CLEARED, currentPage preserved", () => {
+    const FINISHED_TS = "2026-04-30T00:00:00.000Z";
+    const result = computeStatusChange({
+      prevStatus: "read",
+      nextStatus: "abandoned",
+      startedAt: FIXED_TS,
+      finishedAt: FINISHED_TS,
+      currentPage: 300,
+      totalPages: 300,
+    });
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(300);
+  });
+
+  // FR-TR-5: paused → reading
+  it("paused -> reading: startedAt preserved (no re-set), finishedAt null, currentPage preserved", () => {
+    const result = computeStatusChange({
+      prevStatus: "paused",
+      nextStatus: "reading",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 120,
+      totalPages: 300,
+    });
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(120);
+  });
+
+  // FR-TR-6: abandoned → reading
+  it("abandoned -> reading: startedAt preserved, finishedAt null, currentPage preserved", () => {
+    const result = computeStatusChange({
+      prevStatus: "abandoned",
+      nextStatus: "reading",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 50,
+      totalPages: 300,
+    });
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).toBeNull();
+    expect(result.currentPage).toBe(50);
+  });
+
+  // FR-TR-7: paused → read
+  it("paused -> read: startedAt preserved, finishedAt set if null, currentPage bumped to totalPages", () => {
+    const before = Date.now();
+    const result = computeStatusChange({
+      prevStatus: "paused",
+      nextStatus: "read",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 200,
+      totalPages: 300,
+    });
+    const after = Date.now();
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).not.toBeNull();
+    const ts = new Date(result.finishedAt!).getTime();
+    expect(ts).toBeGreaterThanOrEqual(before);
+    expect(ts).toBeLessThanOrEqual(after);
+    expect(result.currentPage).toBe(300);
+  });
+
+  // FR-TR-8: abandoned → read
+  it("abandoned -> read: startedAt preserved, finishedAt set if null, currentPage bumped to totalPages", () => {
+    const before = Date.now();
+    const result = computeStatusChange({
+      prevStatus: "abandoned",
+      nextStatus: "read",
+      startedAt: FIXED_TS,
+      finishedAt: null,
+      currentPage: 50,
+      totalPages: 300,
+    });
+    const after = Date.now();
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.finishedAt).not.toBeNull();
+    const ts = new Date(result.finishedAt!).getTime();
+    expect(ts).toBeGreaterThanOrEqual(before);
+    expect(ts).toBeLessThanOrEqual(after);
+    expect(result.currentPage).toBe(300);
+  });
 });
 
 describe("computeProgressTransition", () => {
@@ -306,5 +468,46 @@ describe("computeProgressTransition", () => {
     });
     expect(result.promptComplete).toBe(false);
     expect(result.autoStatus).toBeNull();
+  });
+
+  // FR-AT-1: paused + forward progress → auto-transition to reading, startedAt preserved
+  it("paused + currentPage=5 + startedAt=FIXED_TS → autoStatus=reading, startedAt preserved", () => {
+    const result = computeProgressTransition({
+      prevStatus: "paused",
+      currentPage: 5,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
+    });
+    expect(result.autoStatus).toBe("reading");
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.promptComplete).toBe(false);
+  });
+
+  // FR-AT-2: abandoned + forward progress → auto-transition to reading, startedAt preserved
+  it("abandoned + currentPage=5 + startedAt=FIXED_TS → autoStatus=reading, startedAt preserved", () => {
+    const result = computeProgressTransition({
+      prevStatus: "abandoned",
+      currentPage: 5,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
+    });
+    expect(result.autoStatus).toBe("reading");
+    expect(result.startedAt).toBe(FIXED_TS);
+    expect(result.promptComplete).toBe(false);
+  });
+
+  // Negative: paused + currentPage=0 → no auto-transition
+  it("paused + currentPage=0 → no auto-transition, autoStatus null, no promptComplete", () => {
+    const result = computeProgressTransition({
+      prevStatus: "paused",
+      currentPage: 0,
+      totalPages: 200,
+      currentStartedAt: FIXED_TS,
+      currentFinishedAt: null,
+    });
+    expect(result.autoStatus).toBeNull();
+    expect(result.promptComplete).toBe(false);
   });
 });

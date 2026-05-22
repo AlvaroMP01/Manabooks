@@ -5,7 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { MBPill } from "@/components/mb/pill";
 import type { EntryStatus } from "@/lib/library/types";
 
-type Counts = { all: number; to_read: number; reading: number; read: number };
+type Counts = {
+  all: number;
+  to_read: number;
+  reading: number;
+  read: number;
+  paused: number;
+  abandoned: number;
+};
 type Props = { counts: Counts; current: EntryStatus | null };
 
 const FILTERS = [
@@ -13,6 +20,8 @@ const FILTERS = [
   { key: "to_read" as const, label: "por leer", color: "#CDEDF6" },
   { key: "reading" as const, label: "leyendo", color: "#FF6FB5" },
   { key: "read" as const, label: "leído", color: "#B8F5D9" },
+  { key: "paused" as const, label: "pausado", color: "#FFD86B" },
+  { key: "abandoned" as const, label: "abandonado", color: "#E5D6DE" },
 ] satisfies ReadonlyArray<{ key: EntryStatus | null; label: string; color: string }>;
 
 /** LibraryFilterPills — URL-driven status filter row using MBPill. */

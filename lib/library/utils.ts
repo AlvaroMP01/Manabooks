@@ -16,7 +16,7 @@ export function seedBookCoverPalette(title: string): readonly [string, string, s
   return PALETTE[seed] as readonly [string, string, string];
 }
 
-export type MBStatusKey = "to_read" | "reading" | "read";
+export type MBStatusKey = "to_read" | "reading" | "read" | "paused" | "abandoned";
 
 const READING_DATE_FORMATTER = new Intl.DateTimeFormat("es-AR", {
   day: "numeric",
@@ -39,5 +39,9 @@ export function dbStatusToMBKey(status: EntryStatus): MBStatusKey {
       return "reading";
     case "read":
       return "read";
+    case "paused":
+      return "paused";
+    case "abandoned":
+      return "abandoned";
   }
 }

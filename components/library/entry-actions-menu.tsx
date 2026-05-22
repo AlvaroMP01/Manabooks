@@ -24,6 +24,16 @@ const STATUS_LABELS: Record<EntryStatus, string> = {
   to_read: "Marcar como por leer",
   reading: "Marcar como leyendo",
   read: "Marcar como leído",
+  paused: "Marcar como pausado",
+  abandoned: "Marcar como abandonado",
+};
+
+const RELEVANT_NEXT_STATUSES: Record<EntryStatus, EntryStatus[]> = {
+  to_read: ["reading", "read", "abandoned"],
+  reading: ["read", "paused", "abandoned"],
+  read: ["reading", "paused", "abandoned"],
+  paused: ["reading", "read", "abandoned"],
+  abandoned: ["reading", "read"],
 };
 
 export function EntryActionsMenu({ entry }: Props) {
@@ -87,21 +97,11 @@ export function EntryActionsMenu({ entry }: Props) {
             Actualizar progreso
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          {optimisticStatus !== "to_read" && (
-            <DropdownMenuItem onClick={() => handleStatusChange("to_read")}>
-              {STATUS_LABELS.to_read}
+          {RELEVANT_NEXT_STATUSES[optimisticStatus].map((s) => (
+            <DropdownMenuItem key={s} onClick={() => handleStatusChange(s)}>
+              {STATUS_LABELS[s]}
             </DropdownMenuItem>
-          )}
-          {optimisticStatus !== "reading" && (
-            <DropdownMenuItem onClick={() => handleStatusChange("reading")}>
-              {STATUS_LABELS.reading}
-            </DropdownMenuItem>
-          )}
-          {optimisticStatus !== "read" && (
-            <DropdownMenuItem onClick={() => handleStatusChange("read")}>
-              {STATUS_LABELS.read}
-            </DropdownMenuItem>
-          )}
+          ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive" onClick={handleDelete}>
             Eliminar de la biblioteca
