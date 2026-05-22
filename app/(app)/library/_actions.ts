@@ -181,6 +181,7 @@ export async function updateProgress(
 
   revalidatePath("/library");
   revalidatePath(`/library/${parsed.data.id}`);
+  revalidatePath("/progress");
   return { ok: true, data: { promptComplete: transition.promptComplete } };
 }
 
