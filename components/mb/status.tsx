@@ -1,6 +1,6 @@
 /** MBStatus — reading-state chip that accepts DB enum keys and renders localized labels. */
 
-type DBStatus = "to_read" | "reading" | "read";
+type DBStatus = "to_read" | "reading" | "read" | "paused" | "abandoned";
 
 type Props = {
   status: DBStatus;
@@ -10,6 +10,8 @@ const STATUS_MAP = {
   to_read: { bg: "var(--color-mb-sky)", fg: "var(--color-mb-ink)", label: "por leer" },
   reading: { bg: "var(--color-mb-pink)", fg: "var(--color-mb-white)", label: "leyendo" },
   read: { bg: "var(--color-mb-mint)", fg: "var(--color-mb-ink)", label: "leído" },
+  paused: { bg: "#FFD86B", fg: "var(--color-mb-ink)", label: "pausado" },
+  abandoned: { bg: "#E5D6DE", fg: "var(--color-mb-ink)", label: "abandonado" },
 } as const;
 
 export function MBStatus({ status }: Props) {
