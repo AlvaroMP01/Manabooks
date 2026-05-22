@@ -25,6 +25,7 @@ interface Props {
   entry: LibraryEntry;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialPhase?: Phase;
 }
 
 interface InnerProps extends Props {
@@ -363,14 +364,15 @@ export function UpdateProgressDialog(props: Props) {
   // updateProgress). If these lived inside the inner, that mid-flow remount would reset
   // them back to defaults, killing the "Marcar como leído?" and "rating" phases.
   // This is the same outer-phase ownership pattern from commit 00d3905 (PR #18).
-  const [phase, setPhase] = useState<Phase>("editing");
+  const initialPhase = props.initialPhase ?? "editing";
+  const [phase, setPhase] = useState<Phase>(initialPhase);
   const [rating, setRating] = useState<number>(0); // 0 = no rating chosen yet
 
-  // Reset to editing (and clear rating) when the dialog signals close — covers Cancel,
+  // Reset to initialPhase (and clear rating) when the dialog signals close — covers Cancel,
   // click-outside, Esc, and post-confirm close.
   const handleOpenChange = (next: boolean) => {
     if (!next) {
-      setPhase("editing");
+      setPhase(initialPhase);
       setRating(0);
     }
     props.onOpenChange(next);
