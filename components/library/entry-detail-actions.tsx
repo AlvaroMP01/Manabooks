@@ -59,16 +59,27 @@ export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
   const nextStatuses = RELEVANT_NEXT_STATUSES[optimisticStatus];
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <MBButton color="pink" onClick={() => openDialog(entry)} disabled={isPending}>
+    <div className="flex w-full flex-col gap-3">
+      <MBButton
+        color="pink"
+        className="w-full"
+        onClick={() => openDialog(entry)}
+        disabled={isPending}
+      >
         actualizar progreso
       </MBButton>
       {nextStatuses.map((s) => (
-        <MBButton key={s} color="purple" onClick={() => handleStatusChange(s)} disabled={isPending}>
+        <MBButton
+          key={s}
+          color="purple"
+          className="w-full"
+          onClick={() => handleStatusChange(s)}
+          disabled={isPending}
+        >
           {STATUS_LABELS[s]}
         </MBButton>
       ))}
-      <MBButton color="white" onClick={handleDelete} disabled={isPending}>
+      <MBButton color="white" className="w-full" onClick={handleDelete} disabled={isPending}>
         eliminar
       </MBButton>
     </div>
