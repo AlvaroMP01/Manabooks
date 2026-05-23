@@ -1,6 +1,10 @@
+import { redirect } from "next/navigation";
+
 import { BookSearchForm } from "@/components/library/book-search-form";
 import { MBSparkle } from "@/components/mb/sparkle";
 import { MBSticker } from "@/components/mb/sticker";
+import { getDiscoveryBooks } from "@/lib/library/discover";
+import { createClient } from "@/lib/supabase/server";
 
 type SearchPageProps = {
   searchParams: Promise<{ q?: string | string[] }>;
@@ -10,6 +14,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const rawQuery = Array.isArray(params.q) ? params.q[0] : params.q;
   const initialQuery = rawQuery?.trim() ?? "";
+
+  const supabase = await createClient();
+  const { data: authData } = await supabase.auth.getClaims();
+  if (!authData?.claims) {
+    redirect("/login");
+  }
+  const userId = authData.claims.sub as string;
+
+  const discoveryBooks = await getDiscoveryBooks(supabase, userId);
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,7 +58,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           Encuentra tu próxima obsesión
         </MBSticker>
       </div>
-      <BookSearchForm key={initialQuery} initialQuery={initialQuery} />
+      <BookSearchForm
+        key={initialQuery}
+        initialQuery={initialQuery}
+        discoveryBooks={discoveryBooks}
+      />
     </div>
   );
 }

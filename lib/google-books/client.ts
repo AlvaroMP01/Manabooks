@@ -60,12 +60,14 @@ function mapVolume(raw: RawVolume): Book {
 
 export async function searchBooks(
   query: string,
-  opts: { limit?: number; lang?: string } = {}
+  opts: { limit?: number; lang?: string; startIndex?: number } = {}
 ): Promise<BooksSearchResult> {
   const limit = Math.min(Math.max(opts.limit ?? 10, 1), 40);
+  const startIndex = Math.max(opts.startIndex ?? 0, 0);
   const params = new URLSearchParams({
     q: query,
     maxResults: String(limit),
+    startIndex: String(startIndex),
     orderBy: "relevance",
     printType: "books",
     key: process.env.GOOGLE_BOOKS_API_KEY!,

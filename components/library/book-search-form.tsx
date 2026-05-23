@@ -12,6 +12,8 @@ import type { Book, BooksSearchResult } from "@/lib/google-books/types";
 type SearchType = "title" | "author" | "isbn";
 type Language = "all" | "es" | "en" | "fr" | "it" | "pt" | "de";
 
+const PAGE_SIZE = 20;
+
 const SEARCH_TYPES: { value: SearchType; label: string; placeholder: string }[] = [
   { value: "title", label: "Título", placeholder: "Título del libro…" },
   { value: "author", label: "Autor", placeholder: "Autor o autora…" },
@@ -28,7 +30,12 @@ const LANGUAGES: { value: Language; label: string }[] = [
   { value: "de", label: "Alemán" },
 ];
 
-function buildSearchUrl(query: string, type: SearchType, lang: Language): string {
+function buildSearchUrl(
+  query: string,
+  type: SearchType,
+  lang: Language,
+  startIndex: number
+): string {
   const trimmed = query.trim();
   if (!trimmed) return "";
 
@@ -37,9 +44,16 @@ function buildSearchUrl(query: string, type: SearchType, lang: Language): string
   else if (type === "author") q = `inauthor:${trimmed}`;
   else if (type === "isbn") q = `isbn:${trimmed.replace(/[^0-9Xx]/g, "")}`;
 
-  const params = new URLSearchParams({ q, limit: "40" });
+  const params = new URLSearchParams({ q, limit: String(PAGE_SIZE) });
   if (lang !== "all") params.set("lang", lang);
+  if (startIndex > 0) params.set("startIndex", String(startIndex));
   return `/api/books/search?${params.toString()}`;
+}
+
+function parseYear(publishedDate: string | null): string | null {
+  if (!publishedDate) return null;
+  const candidate = publishedDate.slice(0, 4);
+  return /^\d{4}$/.test(candidate) ? candidate : null;
 }
 
 function BookSearchSkeleton() {
@@ -82,6 +96,9 @@ function BookSearchSkeleton() {
 
 export function BookSearchCard({ book }: { book: Book }) {
   const author = book.authors?.[0] ?? "Autor desconocido";
+  const year = parseYear(book.publishedDate);
+  const pages = book.pageCount;
+  const hasMeta = year !== null || pages !== null;
 
   return (
     <MBCard color="#FFFCFE" radius={18} className="relative flex flex-col items-center gap-4 p-5">
@@ -113,6 +130,21 @@ export function BookSearchCard({ book }: { book: Book }) {
         >
           {author}
         </p>
+        {hasMeta && (
+          <p
+            className="mt-1"
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 12,
+              color: "#6E4A7A",
+              margin: 0,
+            }}
+          >
+            {year}
+            {year && pages !== null ? " · " : ""}
+            {pages !== null ? `${pages} págs` : ""}
+          </p>
+        )}
         {book.description && (
           <p
             className="mt-2 line-clamp-3 text-left"
@@ -133,12 +165,21 @@ export function BookSearchCard({ book }: { book: Book }) {
   );
 }
 
-/** BookSearchForm — Google Books search with type + language filters and MB-styled result cards. */
-export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string }) {
+interface BookSearchFormProps {
+  initialQuery?: string;
+  discoveryBooks?: Book[];
+}
+
+type FetchKind = "replace" | "append";
+
+/** BookSearchForm — Google Books search with type + language filters, pagination, and discovery fallback. */
+export function BookSearchForm({ initialQuery = "", discoveryBooks = [] }: BookSearchFormProps) {
   const [query, setQuery] = useState(initialQuery);
   const [searchType, setSearchType] = useState<SearchType>("title");
   const [lang, setLang] = useState<Language>("all");
-  const [results, setResults] = useState<Book[] | null>(null);
+  const [results, setResults] = useState<Book[]>([]);
+  const [total, setTotal] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const placeholder = useMemo(
@@ -146,26 +187,45 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
     [searchType]
   );
 
-  const runSearch = useCallback((rawQuery: string, type: SearchType, language: Language) => {
-    const url = buildSearchUrl(rawQuery, type, language);
-    if (!url) return;
+  const runSearch = useCallback(
+    (
+      rawQuery: string,
+      type: SearchType,
+      language: Language,
+      kind: FetchKind,
+      startIndex: number
+    ) => {
+      const url = buildSearchUrl(rawQuery, type, language, startIndex);
+      if (!url) return;
 
-    startTransition(async () => {
-      const res = await fetch(url);
-      if (!res.ok) {
-        setResults([]);
-        return;
-      }
-      const json = (await res.json()) as BooksSearchResult;
-      setResults(json.items ?? []);
-    });
-  }, []);
+      startTransition(async () => {
+        const res = await fetch(url);
+        if (!res.ok) {
+          if (kind === "replace") {
+            setResults([]);
+            setTotal(0);
+          }
+          setHasSearched(true);
+          return;
+        }
+        const json = (await res.json()) as BooksSearchResult;
+        const items = json.items ?? [];
+        setResults((prev) => (kind === "replace" ? items : [...prev, ...items]));
+        setTotal(json.total ?? 0);
+        setHasSearched(true);
+      });
+    },
+    []
+  );
 
   useEffect(() => {
-    if (initialQuery) runSearch(initialQuery, searchType, lang);
+    if (initialQuery) runSearch(initialQuery, searchType, lang, "replace", 0);
     // initialQuery only runs once at mount; type/lang are local choices that take effect on submit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
+
+  const hasMore = !isPending && results.length > 0 && results.length < total;
+  const showDiscovery = !hasSearched && !isPending && discoveryBooks.length > 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -242,7 +302,7 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            runSearch(query, searchType, lang);
+            runSearch(query, searchType, lang, "replace", 0);
           }}
           className="flex gap-3"
         >
@@ -275,24 +335,45 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
         </form>
       </div>
 
-      {isPending && <BookSearchSkeleton />}
+      {isPending && results.length === 0 && <BookSearchSkeleton />}
 
-      {!isPending && results === null && (
-        <p
-          className="text-center"
-          style={{ fontFamily: "var(--font-hand)", fontSize: 18, color: "#3B1F47" }}
-        >
-          Escribe{" "}
-          {searchType === "isbn"
-            ? "un ISBN"
-            : searchType === "author"
-              ? "el nombre de un autor"
-              : "el nombre de un libro"}{" "}
-          para buscarlo
-        </p>
+      {showDiscovery && (
+        <section aria-labelledby="discovery-heading" className="flex flex-col gap-3">
+          <h2
+            id="discovery-heading"
+            style={{
+              fontFamily: "var(--font-curly)",
+              fontSize: 28,
+              color: "#FF3D9A",
+              margin: 0,
+              WebkitTextStroke: "1.8px #3B1F47",
+              paintOrder: "stroke fill",
+              filter: "drop-shadow(2px 3px 0 #3B1F47)",
+            }}
+          >
+            para descubrir ✦
+          </h2>
+          <p
+            style={{
+              fontFamily: "var(--font-hand)",
+              fontSize: 16,
+              color: "#6E4A7A",
+              margin: 0,
+            }}
+          >
+            Libros que quizás no conoces todavía
+          </p>
+          <ul role="list" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {discoveryBooks.map((book) => (
+              <li key={book.volumeId}>
+                <BookSearchCard book={book} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
-      {!isPending && results !== null && results.length === 0 && (
+      {hasSearched && !isPending && results.length === 0 && (
         <p
           className="text-center"
           style={{ fontFamily: "var(--font-hand)", fontSize: 18, color: "#3B1F47" }}
@@ -301,14 +382,37 @@ export function BookSearchForm({ initialQuery = "" }: { initialQuery?: string })
         </p>
       )}
 
-      {!isPending && results !== null && results.length > 0 && (
-        <ul role="list" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((book) => (
-            <li key={book.volumeId}>
-              <BookSearchCard book={book} />
-            </li>
-          ))}
-        </ul>
+      {results.length > 0 && (
+        <div className="flex flex-col gap-4" aria-live="polite">
+          <ul role="list" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {results.map((book, idx) => (
+              <li key={`${book.volumeId}-${idx}`}>
+                <BookSearchCard book={book} />
+              </li>
+            ))}
+          </ul>
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <MBButton
+                type="button"
+                color="purple"
+                size="sm"
+                onClick={() => runSearch(query, searchType, lang, "append", results.length)}
+                disabled={isPending}
+              >
+                ver más resultados ✦
+              </MBButton>
+            </div>
+          )}
+          {isPending && results.length > 0 && (
+            <p
+              className="text-center"
+              style={{ fontFamily: "var(--font-hand)", fontSize: 15, color: "#6E4A7A" }}
+            >
+              cargando más libros…
+            </p>
+          )}
+        </div>
       )}
     </div>
   );

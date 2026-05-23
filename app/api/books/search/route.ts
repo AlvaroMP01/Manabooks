@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const q = searchParams.get("q")?.trim();
   const limitRaw = searchParams.get("limit");
   const langRaw = searchParams.get("lang")?.trim().toLowerCase();
+  const startIndexRaw = searchParams.get("startIndex");
 
   if (!q) {
     return NextResponse.json({ error: "missing query" }, { status: 400 });
@@ -21,8 +22,20 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(Math.max(limitNum, 1), 40);
   const lang = langRaw && ALLOWED_LANGS.has(langRaw) ? langRaw : null;
 
+  let startIndex = 0;
+  if (startIndexRaw !== null) {
+    const parsed = Number(startIndexRaw);
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1000) {
+      return NextResponse.json({ error: "invalid startIndex" }, { status: 400 });
+    }
+    startIndex = Math.floor(parsed);
+  }
+
   try {
-    const result = await searchBooks(q, lang ? { limit, lang } : { limit });
+    const opts: { limit: number; lang?: string; startIndex?: number } = { limit };
+    if (lang) opts.lang = lang;
+    if (startIndex > 0) opts.startIndex = startIndex;
+    const result = await searchBooks(q, opts);
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof GoogleBooksError) {
