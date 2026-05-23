@@ -90,7 +90,14 @@ export default async function LibraryEntryDetailPage({ params }: { params: Param
             >
               {entry.title}
             </h1>
-            <div style={{ fontFamily: "var(--font-hand)", fontSize: 28, color: "#8B3FE0" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-hand)",
+                fontSize: 28,
+                color: "#8B3FE0",
+                marginTop: 12,
+              }}
+            >
               de {entry.authors.length > 0 ? entry.authors.join(", ") : "autor desconocido"}
             </div>
 
