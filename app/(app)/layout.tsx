@@ -25,7 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Content layer — normal document flow, scrolls naturally. */}
       <div className="relative z-10 flex min-h-dvh">
         <Sidebar displayName={displayName} email={email} />
-        <main className="flex-1 px-4 pt-6 pb-28 lg:px-8 lg:pb-10">
+        <main className="min-w-0 flex-1 px-4 pt-6 pb-28 lg:px-8 lg:pb-10">
           <ProgressDialogProvider>{children}</ProgressDialogProvider>
         </main>
       </div>

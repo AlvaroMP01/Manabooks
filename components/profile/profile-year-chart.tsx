@@ -63,14 +63,14 @@ export function ProfileYearChart({ year, monthlyReadCounts, currentMonth }: Prof
           {year}
         </span>
       </div>
-      <div className="flex items-end gap-2" style={{ height: CHART_HEIGHT, marginTop: 8 }}>
+      <div className="flex items-end gap-1 sm:gap-2" style={{ height: CHART_HEIGHT, marginTop: 8 }}>
         {monthlyReadCounts.map((value, idx) => {
           const isCurrent = idx === currentMonth;
           const heightPct = (value / max) * BAR_AREA_HEIGHT;
           const barHeight = Math.max(heightPct, MIN_BAR_HEIGHT);
           const month = MONTH_LABELS[idx];
           return (
-            <div key={month} className="flex flex-1 flex-col items-center gap-1.5">
+            <div key={month} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
               <span
                 style={{
                   fontFamily: "var(--font-sticker)",

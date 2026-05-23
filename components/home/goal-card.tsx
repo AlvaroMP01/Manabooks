@@ -60,8 +60,9 @@ export function GoalCard({ yearGoal, yearRead, monthRead, streak }: GoalCardProp
           aria-hidden="true"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(13, 1fr)",
+            gridTemplateColumns: "repeat(13, minmax(0, 1fr))",
             gap: 3,
+            justifyItems: "center",
           }}
         >
           {Array.from({ length: 52 }).map((_, i) => (
@@ -70,6 +71,7 @@ export function GoalCard({ yearGoal, yearRead, monthRead, streak }: GoalCardProp
               size={18}
               color={i < filledCount ? "#FF3D9A" : "#FFD0E7"}
               outline="#3B1F47"
+              className="h-auto w-full max-w-[18px]"
             />
           ))}
         </div>
