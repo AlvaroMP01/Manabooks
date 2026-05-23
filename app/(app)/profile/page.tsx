@@ -3,7 +3,10 @@ import { redirect } from "next/navigation";
 
 import { MBButton } from "@/components/mb/button";
 import { ProfileStatTile } from "@/components/profile/profile-stat-tile";
+import { ProfileYearChart } from "@/components/profile/profile-year-chart";
+import { ProfileYearGoal } from "@/components/profile/profile-year-goal";
 import { extractDisplayName, extractEmail } from "@/lib/auth/display-name";
+import { getUserProfile } from "@/lib/library/profile";
 import { getProfileStats } from "@/lib/library/profile-stats";
 import { getCurrentStreak } from "@/lib/library/streak";
 import { createClient } from "@/lib/supabase/server";
@@ -25,10 +28,13 @@ export default async function ProfilePage() {
   const headline = displayName ?? email ?? "mi perfil";
   const initial = headline.charAt(0).toUpperCase();
 
-  const currentYear = new Date().getUTCFullYear();
-  const [stats, streakResult] = await Promise.all([
+  const now = new Date();
+  const currentYear = now.getUTCFullYear();
+  const currentMonth = now.getUTCMonth();
+  const [stats, streakResult, profile] = await Promise.all([
     getProfileStats(supabase, userId, currentYear),
     getCurrentStreak(supabase, userId),
+    getUserProfile(supabase, userId),
   ]);
 
   return (
@@ -150,6 +156,15 @@ export default async function ProfilePage() {
             valueFontSize={36}
           />
         </dl>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
+        <ProfileYearChart
+          year={currentYear}
+          monthlyReadCounts={stats.monthlyReadCounts}
+          currentMonth={currentMonth}
+        />
+        <ProfileYearGoal year={currentYear} yearRead={stats.yearRead} yearGoal={profile.yearGoal} />
       </div>
 
       <div className="flex justify-end">
