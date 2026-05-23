@@ -21,7 +21,7 @@ export function EntryProgressCard({ entry }: { entry: LibraryEntry }) {
             style={{
               fontFamily: "var(--font-curly)",
               fontSize: 28,
-              color: "var(--color-mb-pinkDeep)",
+              color: "var(--color-mb-pink-deep)",
               WebkitTextStroke: "1.5px #3B1F47",
               paintOrder: "stroke fill",
               lineHeight: 0.9,

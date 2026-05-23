@@ -9,7 +9,7 @@ export function EntrySynopsis({ synopsis }: { synopsis: string | null }) {
         style={{
           fontFamily: "var(--font-curly)",
           fontSize: 28,
-          color: "var(--color-mb-pinkDeep)",
+          color: "var(--color-mb-pink-deep)",
           margin: 0,
           WebkitTextStroke: "1.5px #3B1F47",
           paintOrder: "stroke fill",

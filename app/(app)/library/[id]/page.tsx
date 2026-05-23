@@ -50,7 +50,7 @@ export default async function LibraryEntryDetailPage({ params }: { params: Param
             />
             <MBSparkle
               size={36}
-              color="var(--color-mb-pinkDeep)"
+              color="var(--color-mb-pink-deep)"
               style={{ position: "absolute", bottom: -10, left: -16 }}
             />
           </div>
@@ -80,7 +80,7 @@ export default async function LibraryEntryDetailPage({ params }: { params: Param
               style={{
                 fontFamily: "var(--font-curly)",
                 fontSize: 64,
-                color: "var(--color-mb-pinkDeep)",
+                color: "var(--color-mb-pink-deep)",
                 margin: "14px 0 4px",
                 lineHeight: 0.95,
                 WebkitTextStroke: "2.5px #3B1F47",
