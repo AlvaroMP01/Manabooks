@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MBBookCover } from "@/components/mb/book-cover";
+import { MBButton } from "@/components/mb/button";
 import { MBCard } from "@/components/mb/card";
 import { MBSticker } from "@/components/mb/sticker";
 import type { LibraryEntry } from "@/lib/library/types";
@@ -44,71 +45,80 @@ export function TBRPileCard({ entries }: TBRPileCardProps) {
             Tu pila está vacía ♡
           </p>
         ) : (
-          <div className="flex flex-col gap-3">
-            {entries.map((entry, idx) => (
-              <Link
-                key={entry.id}
-                href={`/library/${entry.id}`}
-                aria-label={`Ver detalle de ${entry.title}`}
-                className="focus-visible:ring-mb-pink-deep flex items-center gap-3 rounded-lg no-underline transition-opacity hover:opacity-80 focus-visible:ring-2"
-                style={{ color: "inherit" }}
-              >
-                {/* Rank */}
-                <span
-                  style={{
-                    fontFamily: "var(--font-curly)",
-                    fontSize: 20,
-                    color: "#3B1F47",
-                    minWidth: "1.5rem",
-                    lineHeight: 1,
-                    flexShrink: 0,
-                  }}
+          <>
+            <div className="flex flex-col gap-3">
+              {entries.map((entry, idx) => (
+                <Link
+                  key={entry.id}
+                  href={`/library/${entry.id}`}
+                  aria-label={`Ver detalle de ${entry.title}`}
+                  className="focus-visible:ring-mb-pink-deep flex items-center gap-3 rounded-lg no-underline transition-opacity hover:opacity-80 focus-visible:ring-2"
+                  style={{ color: "inherit" }}
                 >
-                  {idx + 1}
-                </span>
-
-                {/* Cover — single render, fixed small size */}
-                <MBBookCover
-                  title={entry.title}
-                  author={entry.authors[0] ?? ""}
-                  thumbnail={entry.thumbnailUrl}
-                  width={28}
-                  height={42}
-                />
-
-                {/* Title + author */}
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <p
+                  {/* Rank */}
+                  <span
                     style={{
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 700,
-                      fontSize: 13,
+                      fontFamily: "var(--font-curly)",
+                      fontSize: 20,
                       color: "#3B1F47",
-                      margin: 0,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                      minWidth: "1.5rem",
+                      lineHeight: 1,
+                      flexShrink: 0,
                     }}
                   >
-                    {entry.title}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-hand)",
-                      fontSize: 12,
-                      color: "#6E4A7A",
-                      margin: 0,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {entry.authors[0] ?? ""}
-                  </p>
-                </div>
+                    {idx + 1}
+                  </span>
+
+                  {/* Cover — single render, fixed small size */}
+                  <MBBookCover
+                    title={entry.title}
+                    author={entry.authors[0] ?? ""}
+                    thumbnail={entry.thumbnailUrl}
+                    width={28}
+                    height={42}
+                  />
+
+                  {/* Title + author */}
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <p
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontWeight: 700,
+                        fontSize: 13,
+                        color: "#3B1F47",
+                        margin: 0,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {entry.title}
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-hand)",
+                        fontSize: 12,
+                        color: "#6E4A7A",
+                        margin: 0,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {entry.authors[0] ?? ""}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="flex justify-end pt-1">
+              <Link href="/library?status=to_read" aria-label="Ver toda tu pila de TBR">
+                <MBButton color="white" size="sm">
+                  ver toda la pila →
+                </MBButton>
               </Link>
-            ))}
-          </div>
+            </div>
+          </>
         )}
       </div>
     </MBCard>
