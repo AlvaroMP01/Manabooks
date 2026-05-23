@@ -12,6 +12,7 @@ import {
   addToLibrarySchema,
   type DeleteEntryInput,
   deleteEntrySchema,
+  updateEntryNoteSchema,
   type UpdateEntryRatingInput,
   updateEntryRatingSchema,
   type UpdateEntryStatusInput,
@@ -201,6 +202,28 @@ export async function updateEntryRating(
   const { error } = await supabase
     .from("library_entries")
     .update({ rating: parsed.data.rating })
+    .eq("id", parsed.data.id);
+
+  if (error) return { ok: false, code: "unknown", message: error.message };
+
+  revalidatePath("/library");
+  revalidatePath(`/library/${parsed.data.id}`);
+  revalidatePath("/progress");
+  revalidatePath("/");
+  return { ok: true, data: undefined };
+}
+
+export async function updateEntryNote(input: unknown): Promise<ActionResult> {
+  const parsed = updateEntryNoteSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, code: "invalid_input" };
+
+  const supabase = await createClient();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  if (!claimsData?.claims) return { ok: false, code: "unauthorized" };
+
+  const { error } = await supabase
+    .from("library_entries")
+    .update({ quick_note: parsed.data.note })
     .eq("id", parsed.data.id);
 
   if (error) return { ok: false, code: "unknown", message: error.message };

@@ -42,6 +42,17 @@ export const updateEntryRatingSchema = z.object({
 });
 export type UpdateEntryRatingInput = z.infer<typeof updateEntryRatingSchema>;
 
+export const updateEntryNoteSchema = z.object({
+  id: z.string().uuid(),
+  note: z
+    .string()
+    .trim()
+    .max(500)
+    .nullable()
+    .transform((s) => (s === "" ? null : s)),
+});
+export type UpdateEntryNoteInput = z.infer<typeof updateEntryNoteSchema>;
+
 export const updateProgressSchema = z
   .object({
     id: z.string().uuid(),
