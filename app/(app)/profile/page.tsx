@@ -2,12 +2,14 @@ import { LogOut } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { MBButton } from "@/components/mb/button";
+import { ProfileAchievements } from "@/components/profile/profile-achievements";
+import { ProfileHero } from "@/components/profile/profile-hero";
 import { ProfileStatTile } from "@/components/profile/profile-stat-tile";
 import { ProfileYearChart } from "@/components/profile/profile-year-chart";
 import { ProfileYearGoal } from "@/components/profile/profile-year-goal";
 import { extractDisplayName, extractEmail } from "@/lib/auth/display-name";
 import { getUserProfile } from "@/lib/library/profile";
-import { getProfileStats } from "@/lib/library/profile-stats";
+import { computeAchievements, getProfileStats } from "@/lib/library/profile-stats";
 import { getCurrentStreak } from "@/lib/library/streak";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,82 +39,24 @@ export default async function ProfilePage() {
     getUserProfile(supabase, userId),
   ]);
 
+  const achievements = computeAchievements({
+    stats,
+    currentStreak: streakResult.currentStreak,
+    yearGoal: profile.yearGoal,
+  });
+
   return (
     <section aria-labelledby="profile-heading" className="flex flex-col gap-8">
       <h1 id="profile-heading" className="sr-only">
         Mi perfil
       </h1>
 
-      <header className="flex items-center gap-6">
-        <div
-          aria-hidden="true"
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-            background: "#B967FF",
-            border: "2.5px solid #3B1F47",
-            boxShadow: "3px 4px 0 #3B1F47",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            fontFamily: "var(--font-sticker)",
-            fontSize: 30,
-            color: "#FFFCFE",
-          }}
-        >
-          {initial}
-        </div>
-        <div className="min-w-0">
-          <h2
-            style={{
-              fontFamily: "var(--font-curly)",
-              fontSize: 36,
-              color: "#FF3D9A",
-              margin: 0,
-              lineHeight: 1.1,
-              WebkitTextStroke: "2px #3B1F47",
-              paintOrder: "stroke fill",
-              filter: "drop-shadow(2px 3px 0 #3B1F47)",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-            title={headline}
-          >
-            {headline}
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-hand)",
-              fontSize: 18,
-              color: "#8B3FE0",
-              margin: 0,
-              marginTop: 4,
-            }}
-          >
-            tu rincón de lectora ✦
-          </p>
-          {displayName && email && (
-            <p
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 13,
-                color: "#6E4A7A",
-                margin: 0,
-                marginTop: 2,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-              title={email}
-            >
-              {email}
-            </p>
-          )}
-        </div>
-      </header>
+      <ProfileHero
+        initial={initial}
+        headline={headline}
+        email={email}
+        showEmail={Boolean(displayName && email)}
+      />
 
       <div className="flex flex-col gap-3">
         <h3
@@ -164,7 +108,14 @@ export default async function ProfilePage() {
           monthlyReadCounts={stats.monthlyReadCounts}
           currentMonth={currentMonth}
         />
-        <ProfileYearGoal year={currentYear} yearRead={stats.yearRead} yearGoal={profile.yearGoal} />
+        <div className="flex flex-col gap-5">
+          <ProfileYearGoal
+            year={currentYear}
+            yearRead={stats.yearRead}
+            yearGoal={profile.yearGoal}
+          />
+          <ProfileAchievements achievements={achievements} />
+        </div>
       </div>
 
       <div className="flex justify-end">
