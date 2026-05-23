@@ -158,7 +158,7 @@ export function GoalCard({ yearGoal, yearRead, monthRead, streak }: GoalCardProp
                 letterSpacing: "1.5px",
               }}
             >
-              DÍAS STREAK
+              LA RACHA PUTA
             </span>
           </div>
         </div>
