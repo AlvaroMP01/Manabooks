@@ -17,6 +17,11 @@ describe("EntrySynopsis", () => {
     expect(screen.getByText("A story about wizards.")).toBeInTheDocument();
   });
 
+  it("renders heading with 'de qué va' text", () => {
+    render(<EntrySynopsis synopsis="A story about wizards." />);
+    expect(screen.getByRole("heading", { name: /de qué va/i })).toBeInTheDocument();
+  });
+
   it("returns null (no card) when synopsis is null", () => {
     const { container } = render(<EntrySynopsis synopsis={null} />);
     expect(container.firstChild).toBeNull();

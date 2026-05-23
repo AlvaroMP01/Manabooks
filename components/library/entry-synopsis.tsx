@@ -5,8 +5,18 @@ export function EntrySynopsis({ synopsis }: { synopsis: string | null }) {
 
   return (
     <MBCard color="#FFFCFE" className="flex flex-col gap-2 p-6">
-      <h2 style={{ fontFamily: "var(--font-curly)", fontSize: 24, color: "#FF3D9A", margin: 0 }}>
-        sinopsis
+      <h2
+        style={{
+          fontFamily: "var(--font-curly)",
+          fontSize: 28,
+          color: "var(--color-mb-pinkDeep)",
+          margin: 0,
+          WebkitTextStroke: "1.5px #3B1F47",
+          paintOrder: "stroke fill",
+          filter: "drop-shadow(1.5px 2px 0 #3B1F47)",
+        }}
+      >
+        de qué va
       </h2>
       <p
         style={{
