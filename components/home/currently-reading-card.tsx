@@ -238,6 +238,14 @@ export function CurrentlyReadingCard({ entries }: CurrentlyReadingCardProps) {
                 </div>
               </div>
             )}
+
+            <div className="flex justify-end">
+              <Link href="/progress" aria-label="Ver todo tu progreso de lectura">
+                <MBButton color="white" size="sm">
+                  ver más →
+                </MBButton>
+              </Link>
+            </div>
           </>
         )}
       </div>
