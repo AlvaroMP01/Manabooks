@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { EntryDetailActions } from "@/components/library/entry-detail-actions";
 import { EntryHero } from "@/components/library/entry-hero";
+import { EntryNote } from "@/components/library/entry-note";
 import { EntryRatingEditor } from "@/components/library/entry-rating-editor";
 import { EntryStats } from "@/components/library/entry-stats";
 import { EntrySynopsis } from "@/components/library/entry-synopsis";
@@ -29,6 +30,7 @@ export default async function LibraryEntryDetailPage({ params }: { params: Param
       <EntryHero entry={entry} />
       <EntryDetailActions entry={entry} />
       <EntryRatingEditor entryId={entry.id} initialRating={entry.rating} />
+      <EntryNote entry={entry} />
       <EntryStats entry={entry} />
       <EntrySynopsis synopsis={entry.synopsis} />
     </div>

@@ -77,11 +77,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Sear
         </p>
       </header>
       <LibraryFilterPills counts={counts} current={filter} />
-      {entries.length > 0 ? (
-        <LibrarySearchableGrid entries={entries} />
-      ) : (
-        <LibraryEmptyState />
-      )}
+      {entries.length > 0 ? <LibrarySearchableGrid entries={entries} /> : <LibraryEmptyState />}
     </div>
   );
 }

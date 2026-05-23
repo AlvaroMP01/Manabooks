@@ -8,6 +8,7 @@ import { MBStatus } from "@/components/mb/status";
 import { MBSticker } from "@/components/mb/sticker";
 import type { LibraryEntry } from "@/lib/library/types";
 
+import { NoteCTA } from "./note-cta";
 import { ProgressCTA } from "./progress-cta";
 
 interface CurrentlyReadingCardProps {
@@ -147,14 +148,7 @@ export function CurrentlyReadingCard({ entries }: CurrentlyReadingCardProps) {
                 {/* CTA row */}
                 <div className="flex flex-wrap items-center gap-2">
                   <ProgressCTA entry={primary} />
-                  <MBButton
-                    size="sm"
-                    color="white"
-                    disabled
-                    style={{ opacity: 0.5, cursor: "not-allowed" }}
-                  >
-                    ✎ Nota rápida
-                  </MBButton>
+                  <NoteCTA entry={primary} />
                 </div>
               </div>
             </div>

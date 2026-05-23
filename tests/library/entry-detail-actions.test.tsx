@@ -46,8 +46,9 @@ vi.mock("@/components/library/update-progress-dialog", () => ({
 }));
 
 const mockOpenDialog = vi.fn();
+const mockOpenNoteDialog = vi.fn();
 vi.mock("@/components/library/progress-dialog-provider", () => ({
-  useProgressDialog: () => ({ openDialog: mockOpenDialog }),
+  useProgressDialog: () => ({ openDialog: mockOpenDialog, openNoteDialog: mockOpenNoteDialog }),
   ProgressDialogProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
@@ -68,6 +69,7 @@ const BASE_ENTRY: LibraryEntry = {
   rating: null,
   genre: null,
   lastProgressAt: null,
+  quickNote: null,
 };
 
 describe("EntryDetailActions", () => {

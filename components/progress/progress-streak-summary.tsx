@@ -21,7 +21,10 @@ function formatLastActivity(lastActivityAt: string | null): string {
 }
 
 /** ProgressStreakSummary — displays current reading streak. Server component. */
-export function ProgressStreakSummary({ currentStreak, lastActivityAt }: ProgressStreakSummaryProps) {
+export function ProgressStreakSummary({
+  currentStreak,
+  lastActivityAt,
+}: ProgressStreakSummaryProps) {
   const subtitle = currentStreak === 1 ? "día leyendo" : "días leyendo";
   const lastActivity = formatLastActivity(lastActivityAt);
 

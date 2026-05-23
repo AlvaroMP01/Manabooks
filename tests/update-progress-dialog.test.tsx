@@ -14,7 +14,6 @@ vi.mock("@/app/(app)/library/_actions", () => ({
   updateEntryRating: (...args: unknown[]) => mockUpdateEntryRating(...args),
 }));
 
-
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),
@@ -85,6 +84,7 @@ const BASE_ENTRY: LibraryEntry = {
   rating: null,
   genre: null,
   lastProgressAt: null,
+  quickNote: null,
 };
 
 describe("UpdateProgressDialog — phase survives mid-flow remount", () => {

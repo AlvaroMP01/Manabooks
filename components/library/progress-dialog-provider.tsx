@@ -2,12 +2,14 @@
 
 import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
 
+import { NoteDialog } from "@/components/library/note-dialog";
 import { UpdateProgressDialog } from "@/components/library/update-progress-dialog";
 import type { LibraryEntry } from "@/lib/library/types";
 
 /**
- * Provider that hoists the UpdateProgressDialog to a stable level (the (app) layout)
- * so its lifecycle is independent of the entry-listing components that open it.
+ * Provider that hoists the UpdateProgressDialog and NoteDialog to a stable level
+ * (the (app) layout) so their lifecycle is independent of the entry-listing components
+ * that open them.
  *
  * Without this: when an action transitions a book from "reading" to "read", the
  * Server Action auto-refreshes the current route, the entry leaves the reading list,
@@ -15,14 +17,15 @@ import type { LibraryEntry } from "@/lib/library/types";
  * and the dialog (and its in-flight rating phase) dies with it.
  *
  * With this: the Provider owns the dialog state. Hosts call `openDialog(entry, phase)`
- * via context. The dialog stays mounted at the layout level through any re-render of
- * its caller, so the rating phase has a chance to render and be interacted with.
+ * or `openNoteDialog(entry)` via context. Dialogs stay mounted at the layout level
+ * through any re-render of their callers.
  */
 
 type DialogInitialPhase = "editing" | "awaiting-complete";
 
 interface ProgressDialogContextValue {
   openDialog: (entry: LibraryEntry, initialPhase?: DialogInitialPhase) => void;
+  openNoteDialog: (entry: LibraryEntry) => void;
 }
 
 const ProgressDialogContext = createContext<ProgressDialogContextValue | null>(null);
@@ -36,6 +39,7 @@ export function useProgressDialog(): ProgressDialogContextValue {
 }
 
 export function ProgressDialogProvider({ children }: { children: ReactNode }) {
+  // Progress dialog state
   const [entry, setEntry] = useState<LibraryEntry | null>(null);
   const [initialPhase, setInitialPhase] = useState<DialogInitialPhase>("editing");
   // Session counter bumps on every openDialog call. Used as `key` on the dialog so
@@ -43,21 +47,27 @@ export function ProgressDialogProvider({ children }: { children: ReactNode }) {
   // current initialPhase without needing a useEffect sync.
   const [session, setSession] = useState(0);
 
-  const openDialog = useCallback(
-    (next: LibraryEntry, phase: DialogInitialPhase = "editing") => {
-      setEntry(next);
-      setInitialPhase(phase);
-      setSession((s) => s + 1);
-    },
-    [],
-  );
+  // Note dialog state (parallel — keeps existing consumers untouched)
+  const [noteEntry, setNoteEntry] = useState<LibraryEntry | null>(null);
+  const [noteSession, setNoteSession] = useState(0);
+
+  const openDialog = useCallback((next: LibraryEntry, phase: DialogInitialPhase = "editing") => {
+    setEntry(next);
+    setInitialPhase(phase);
+    setSession((s) => s + 1);
+  }, []);
+
+  const openNoteDialog = useCallback((next: LibraryEntry) => {
+    setNoteEntry(next);
+    setNoteSession((s) => s + 1);
+  }, []);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) setEntry(null);
   };
 
   return (
-    <ProgressDialogContext.Provider value={{ openDialog }}>
+    <ProgressDialogContext.Provider value={{ openDialog, openNoteDialog }}>
       {children}
       {entry !== null && (
         <UpdateProgressDialog
@@ -66,6 +76,16 @@ export function ProgressDialogProvider({ children }: { children: ReactNode }) {
           open={entry !== null}
           onOpenChange={handleOpenChange}
           initialPhase={initialPhase}
+        />
+      )}
+      {noteEntry !== null && (
+        <NoteDialog
+          key={noteSession}
+          entry={noteEntry}
+          open={noteEntry !== null}
+          onOpenChange={(open) => {
+            if (!open) setNoteEntry(null);
+          }}
         />
       )}
     </ProgressDialogContext.Provider>

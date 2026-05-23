@@ -4,6 +4,7 @@ import {
   addToLibrarySchema,
   deleteEntrySchema,
   entryStatusSchema,
+  updateEntryNoteSchema,
   updateEntryStatusSchema,
   updateProgressSchema,
 } from "@/lib/validation/library";
@@ -217,5 +218,54 @@ describe("addToLibrarySchema — totalPages field", () => {
     const result = addToLibrarySchema.safeParse({ ...validBase, totalPages: null });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.totalPages).toBeNull();
+  });
+});
+
+describe("updateEntryNoteSchema", () => {
+  const validId = "550e8400-e29b-41d4-a716-446655440000";
+
+  it("accepts valid uuid and non-empty note", () => {
+    const result = updateEntryNoteSchema.safeParse({ id: validId, note: "Me gustó el cap 3" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.note).toBe("Me gustó el cap 3");
+  });
+
+  it("accepts note of exactly 500 characters", () => {
+    const note = "a".repeat(500);
+    const result = updateEntryNoteSchema.safeParse({ id: validId, note });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects note of 501 characters", () => {
+    const note = "a".repeat(501);
+    const result = updateEntryNoteSchema.safeParse({ id: validId, note });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((i) => i.path.join("."));
+      expect(paths).toContain("note");
+    }
+  });
+
+  it('transforms empty string "" to null', () => {
+    const result = updateEntryNoteSchema.safeParse({ id: validId, note: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.note).toBeNull();
+  });
+
+  it("transforms whitespace-only string to null (trim then empty → null)", () => {
+    const result = updateEntryNoteSchema.safeParse({ id: validId, note: "   " });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.note).toBeNull();
+  });
+
+  it("accepts explicit null and keeps it null", () => {
+    const result = updateEntryNoteSchema.safeParse({ id: validId, note: null });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.note).toBeNull();
+  });
+
+  it("rejects non-uuid id", () => {
+    const result = updateEntryNoteSchema.safeParse({ id: "not-a-uuid", note: "OK" });
+    expect(result.success).toBe(false);
   });
 });

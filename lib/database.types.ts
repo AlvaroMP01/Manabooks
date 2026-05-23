@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       library_entries: {
@@ -49,6 +24,7 @@ export type Database = {
           google_volume_id: string
           id: string
           last_progress_at: string | null
+          quick_note: string | null
           rating: number | null
           started_at: string | null
           status: Database["public"]["Enums"]["entry_status"]
@@ -68,6 +44,7 @@ export type Database = {
           google_volume_id: string
           id?: string
           last_progress_at?: string | null
+          quick_note?: string | null
           rating?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["entry_status"]
@@ -87,6 +64,7 @@ export type Database = {
           google_volume_id?: string
           id?: string
           last_progress_at?: string | null
+          quick_note?: string | null
           rating?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["entry_status"]
@@ -254,9 +232,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       entry_status: ["to_read", "reading", "read", "paused", "abandoned"],

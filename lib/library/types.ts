@@ -21,6 +21,7 @@ export type LibraryEntry = {
   rating: number | null;
   genre: string | null;
   lastProgressAt: string | null;
+  quickNote: string | null;
 };
 
 export function rowToEntry(row: Row): LibraryEntry {
@@ -41,5 +42,6 @@ export function rowToEntry(row: Row): LibraryEntry {
     rating: row.rating,
     genre: row.genre,
     lastProgressAt: row.last_progress_at,
+    quickNote: row.quick_note,
   };
 }

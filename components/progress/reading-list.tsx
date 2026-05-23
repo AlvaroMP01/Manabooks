@@ -16,10 +16,7 @@ export function ReadingList({ entries }: ReadingListProps) {
   return (
     <ul className="flex flex-col gap-3" style={{ listStyle: "none", margin: 0, padding: 0 }}>
       {entries.map((entry) => (
-        <ReadingRow
-          key={`${entry.id}-${entry.currentPage}`}
-          entry={entry}
-        />
+        <ReadingRow key={`${entry.id}-${entry.currentPage}`} entry={entry} />
       ))}
     </ul>
   );

@@ -67,7 +67,7 @@ function daysBetween(laterUtc: string, earlierUtc: string): number {
  */
 export async function getCurrentStreak(
   client: SupabaseClient<Database>,
-  userId: string,
+  userId: string
 ): Promise<StreakResult> {
   const { data, error } = await client
     .from("library_entries")
@@ -93,8 +93,8 @@ export async function getCurrentStreak(
       data
         .map((r) => r.last_progress_at)
         .filter((v): v is string => v !== null)
-        .map(toUtcDate),
-    ),
+        .map(toUtcDate)
+    )
   );
 
   const today = toUtcDate(new Date().toISOString());

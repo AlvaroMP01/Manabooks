@@ -6,7 +6,7 @@ import { ReadingList } from "@/components/progress/reading-list";
 import { YearGoalCard } from "@/components/progress/year-goal-card";
 import { getUserProfile } from "@/lib/library/profile";
 import { getCurrentStreak } from "@/lib/library/streak";
-import { type LibraryEntry,rowToEntry } from "@/lib/library/types";
+import { type LibraryEntry, rowToEntry } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
 
 // Local view-model — not exported
@@ -59,16 +59,8 @@ export default async function ProgressPage() {
     <div className="flex flex-col gap-5">
       {/* Inline page header */}
       <header className="relative">
-        <MBSparkle
-          size={28}
-          twinkle
-          className="absolute -top-1 left-24"
-        />
-        <MBSparkle
-          size={18}
-          twinkle
-          className="absolute top-10 -left-4"
-        />
+        <MBSparkle size={28} twinkle className="absolute -top-1 left-24" />
+        <MBSparkle size={18} twinkle className="absolute top-10 -left-4" />
         <h1
           style={{
             fontFamily: "var(--font-curly)",

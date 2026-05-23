@@ -136,9 +136,7 @@ describe("getCurrentStreak", () => {
     const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const threeDaysAgo = new Date(today.getTime() - 3 * 86_400_000);
 
-    const client = mockSupabaseForStreak([
-      { last_progress_at: threeDaysAgo.toISOString() },
-    ]);
+    const client = mockSupabaseForStreak([{ last_progress_at: threeDaysAgo.toISOString() }]);
 
     const result = await getCurrentStreak(client, "user-1");
     expect(result.currentStreak).toBe(0);

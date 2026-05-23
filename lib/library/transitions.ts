@@ -35,10 +35,7 @@ export function computeStatusChange(input: StatusChangeInput): StatusChangeResul
 
   // read → paused | abandoned clears finishedAt to avoid "finished but paused" state.
   // Mirrors the existing rule 1b for read → reading in computeProgressTransition.
-  if (
-    input.prevStatus === "read" &&
-    (nextStatus === "paused" || nextStatus === "abandoned")
-  ) {
+  if (input.prevStatus === "read" && (nextStatus === "paused" || nextStatus === "abandoned")) {
     finishedAt = null;
   }
 
