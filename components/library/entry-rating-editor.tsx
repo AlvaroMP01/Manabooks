@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { updateEntryRating } from "@/app/(app)/library/_actions";
-import { MBCard } from "@/components/mb/card";
 import { MBHeartRating } from "@/components/mb/heart-rating";
 
 interface EntryRatingEditorProps {
@@ -37,54 +36,42 @@ export function EntryRatingEditor({ entryId, initialRating }: EntryRatingEditorP
   }
 
   return (
-    <MBCard color="#FFFCFE" className="flex flex-col gap-3 p-5">
-      <div className="flex items-center justify-between gap-3">
-        <h2
+    <div
+      role="img"
+      aria-label={rating === 0 ? "Sin valoración" : `Valoración: ${rating} de 5`}
+      className="inline-flex items-center gap-2"
+    >
+      <MBHeartRating
+        value={rating}
+        max={5}
+        size={24}
+        onChange={(v) => {
+          if (!isPending) persist(v);
+        }}
+      />
+      {rating > 0 && (
+        <button
+          type="button"
+          onClick={handleClear}
+          disabled={isPending}
+          aria-label="Quitar valoración"
           style={{
-            fontFamily: "var(--font-sticker)",
-            fontSize: 14,
-            color: "#3B1F47",
-            letterSpacing: "1.5px",
-            margin: 0,
-            textTransform: "uppercase",
+            fontFamily: "var(--font-body)",
+            fontSize: 11,
+            fontWeight: 700,
+            color: "#6E4A7A",
+            background: "transparent",
+            border: "none",
+            cursor: isPending ? "not-allowed" : "pointer",
+            opacity: isPending ? 0.5 : 1,
+            padding: 0,
+            textDecoration: "underline",
+            textUnderlineOffset: 3,
           }}
         >
-          Tu valoración
-        </h2>
-        {rating > 0 && (
-          <button
-            type="button"
-            onClick={handleClear}
-            disabled={isPending}
-            aria-label="Quitar valoración"
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: 12,
-              fontWeight: 700,
-              color: "#6E4A7A",
-              background: "transparent",
-              border: "none",
-              cursor: isPending ? "not-allowed" : "pointer",
-              opacity: isPending ? 0.5 : 1,
-              padding: 0,
-              textDecoration: "underline",
-              textUnderlineOffset: 3,
-            }}
-          >
-            Quitar
-          </button>
-        )}
-      </div>
-      <div role="img" aria-label={rating === 0 ? "Sin valoración" : `Valoración: ${rating} de 5`}>
-        <MBHeartRating
-          value={rating}
-          max={5}
-          size={32}
-          onChange={(v) => {
-            if (!isPending) persist(v);
-          }}
-        />
-      </div>
-    </MBCard>
+          Quitar
+        </button>
+      )}
+    </div>
   );
 }
