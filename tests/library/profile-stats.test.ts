@@ -10,10 +10,7 @@ type StatsRow = {
   finished_at: string | null;
 };
 
-function mockSupabaseForStats(
-  rows: StatsRow[],
-  error: unknown = null
-): SupabaseClient<Database> {
+function mockSupabaseForStats(rows: StatsRow[], error: unknown = null): SupabaseClient<Database> {
   const query: Record<string, unknown> = {};
   for (const m of ["select", "eq"] as const) {
     query[m] = vi.fn(() => query);

@@ -60,8 +60,7 @@ export async function getProfileStats(
     }
   }
 
-  const avgRating =
-    ratedCount > 0 ? Math.round((ratingSum / ratedCount) * 10) / 10 : null;
+  const avgRating = ratedCount > 0 ? Math.round((ratingSum / ratedCount) * 10) / 10 : null;
 
   return {
     totalRead: data.length,

@@ -144,11 +144,7 @@ export default async function ProfilePage() {
           />
           <ProfileStatTile
             label="racha actual"
-            value={
-              streakResult.currentStreak > 0
-                ? `${streakResult.currentStreak}🔥`
-                : "0"
-            }
+            value={streakResult.currentStreak > 0 ? `${streakResult.currentStreak}🔥` : "0"}
             icon="⚡"
             color="var(--color-mb-mint)"
             valueFontSize={36}
