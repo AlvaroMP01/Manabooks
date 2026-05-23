@@ -14,7 +14,12 @@ export function EntryNote({ entry }: EntryNoteProps) {
   const hasNote = entry.quickNote !== null;
 
   return (
-    <MBCard color="#FFFCFE" className="flex flex-col gap-3 p-5">
+    <MBCard
+      color="#FFF5C2"
+      radius={14}
+      className="flex flex-col gap-3 p-5"
+      style={{ transform: "rotate(-1deg)", boxShadow: "3px 4px 0 #3B1F47" }}
+    >
       <div className="flex items-center justify-between gap-3">
         <h2
           style={{

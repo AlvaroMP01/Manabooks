@@ -84,6 +84,13 @@ describe("EntryDetailActions", () => {
     expect(screen.getByRole("button", { name: /actualizar progreso/i })).toBeInTheDocument();
   });
 
+  it("renders buttons in a vertical flex-col stack (w-full layout)", () => {
+    const { container } = render(<EntryDetailActions entry={BASE_ENTRY} />);
+    const wrapper = container.firstChild as HTMLElement;
+    expect(wrapper).toHaveClass("flex-col");
+    expect(wrapper).toHaveClass("w-full");
+  });
+
   it("renders correct next-status buttons for reading entry (RELEVANT_NEXT_STATUSES[reading])", () => {
     // entry.status = "reading" → RELEVANT_NEXT_STATUSES.reading = ["read","paused","abandoned"]
     render(<EntryDetailActions entry={BASE_ENTRY} />);
