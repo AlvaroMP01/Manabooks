@@ -38,7 +38,7 @@ export function EntryDetailActions({ entry }: { entry: LibraryEntry }) {
       const result = await updateEntryStatus({ id: entry.id, status: next });
       if (!result.ok) {
         setOptimisticStatus(prev);
-        toast.error("No se pudo actualizar el estado. Intentá de nuevo.");
+        toast.error("No se pudo actualizar el estado. Inténtalo de nuevo.");
       }
     });
   }
