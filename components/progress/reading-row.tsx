@@ -18,7 +18,7 @@ interface ReadingRowProps {
 export function ReadingRow({ entry }: ReadingRowProps) {
   const [currentPageStr, setCurrentPageStr] = useState(String(entry.currentPage));
   const [isPending, startTransition] = useTransition();
-  const { openDialog } = useProgressDialog();
+  const { openDialog, openNoteDialog } = useProgressDialog();
 
   const currentPage = Math.max(0, Number.parseInt(currentPageStr, 10) || 0);
   const isSaveDisabled = isPending || currentPageStr === String(entry.currentPage);
@@ -212,6 +212,16 @@ export function ReadingRow({ entry }: ReadingRowProps) {
                 onClick={handleOpenFullDialog}
               >
                 Ver más ✦
+              </MBButton>
+
+              <MBButton
+                type="button"
+                color="white"
+                size="sm"
+                aria-label={`Editar nota de ${entry.title}`}
+                onClick={() => openNoteDialog(entry)}
+              >
+                ✎ Nota
               </MBButton>
             </div>
           </div>
