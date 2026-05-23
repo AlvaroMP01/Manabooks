@@ -1,41 +1,35 @@
 import { LogOut } from "lucide-react";
+import { redirect } from "next/navigation";
 
 import { MBButton } from "@/components/mb/button";
-import { MBCard } from "@/components/mb/card";
+import { ProfileStatTile } from "@/components/profile/profile-stat-tile";
 import { extractDisplayName, extractEmail } from "@/lib/auth/display-name";
-import type { EntryStatus } from "@/lib/library/types";
+import { getProfileStats } from "@/lib/library/profile-stats";
+import { getCurrentStreak } from "@/lib/library/streak";
 import { createClient } from "@/lib/supabase/server";
 
-type StatusCounts = Record<EntryStatus | "total", number>;
-
-const TILES: Array<{
-  label: string;
-  key: EntryStatus | "total";
-  color: string;
-}> = [
-  { label: "total", key: "total", color: "#FFD86B" },
-  { label: "por leer", key: "to_read", color: "#CDEDF6" },
-  { label: "leyendo", key: "reading", color: "#FFD0E7" },
-  { label: "leído", key: "read", color: "#B8F5D9" },
-];
+const NUMBER_FORMATTER = new Intl.NumberFormat("es-ES");
 
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: authData } = await supabase.auth.getClaims();
-  const displayName = extractDisplayName(authData?.claims);
-  const email = extractEmail(authData?.claims);
+
+  if (!authData?.claims) {
+    redirect("/login");
+  }
+
+  const claims = authData.claims;
+  const userId = claims.sub as string;
+  const displayName = extractDisplayName(claims);
+  const email = extractEmail(claims);
   const headline = displayName ?? email ?? "mi perfil";
   const initial = headline.charAt(0).toUpperCase();
 
-  const { data: rows } = await supabase.from("library_entries").select("status");
-  const counts: StatusCounts = {
-    total: rows?.length ?? 0,
-    to_read: rows?.filter((row) => row.status === "to_read").length ?? 0,
-    reading: rows?.filter((row) => row.status === "reading").length ?? 0,
-    read: rows?.filter((row) => row.status === "read").length ?? 0,
-    paused: rows?.filter((row) => row.status === "paused").length ?? 0,
-    abandoned: rows?.filter((row) => row.status === "abandoned").length ?? 0,
-  };
+  const currentYear = new Date().getUTCFullYear();
+  const [stats, streakResult] = await Promise.all([
+    getProfileStats(supabase, userId, currentYear),
+    getCurrentStreak(supabase, userId),
+  ]);
 
   return (
     <section aria-labelledby="profile-heading" className="flex flex-col gap-8">
@@ -43,7 +37,6 @@ export default async function ProfilePage() {
         Mi perfil
       </h1>
 
-      {/* Avatar + header */}
       <header className="flex items-center gap-6">
         <div
           aria-hidden="true"
@@ -115,7 +108,6 @@ export default async function ProfilePage() {
         </div>
       </header>
 
-      {/* Stats */}
       <div className="flex flex-col gap-3">
         <h3
           style={{
@@ -131,45 +123,39 @@ export default async function ProfilePage() {
           tu biblioteca en números
         </h3>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {TILES.map((tile) => (
-            <MBCard
-              key={tile.key}
-              color={tile.color}
-              radius={20}
-              className="flex flex-col items-center justify-center gap-1 px-4 py-5"
-              // @ts-expect-error dt/dd not standard MBCard children but valid HTML
-              as="div"
-            >
-              <dd
-                style={{
-                  fontFamily: "var(--font-curly)",
-                  fontSize: 40,
-                  color: "#3B1F47",
-                  margin: 0,
-                  lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {counts[tile.key]}
-              </dd>
-              <dt
-                style={{
-                  fontFamily: "var(--font-sticker)",
-                  fontSize: 11,
-                  color: "#3B1F47",
-                  letterSpacing: 2,
-                  textTransform: "uppercase",
-                  margin: 0,
-                }}
-              >
-                {tile.label}
-              </dt>
-            </MBCard>
-          ))}
+          <ProfileStatTile
+            label="libros leídos"
+            value={String(stats.totalRead)}
+            icon="✦"
+            color="var(--color-mb-pink)"
+          />
+          <ProfileStatTile
+            label="páginas totales"
+            value={NUMBER_FORMATTER.format(stats.totalPages)}
+            icon="◉"
+            color="var(--color-mb-sky)"
+            valueFontSize={36}
+          />
+          <ProfileStatTile
+            label="rating promedio"
+            value={stats.avgRating !== null ? stats.avgRating.toFixed(1) : "—"}
+            icon="♡"
+            color="var(--color-mb-yellow)"
+          />
+          <ProfileStatTile
+            label="racha actual"
+            value={
+              streakResult.currentStreak > 0
+                ? `${streakResult.currentStreak}🔥`
+                : "0"
+            }
+            icon="⚡"
+            color="var(--color-mb-mint)"
+            valueFontSize={36}
+          />
         </dl>
       </div>
 
-      {/* Sign-out */}
       <div className="flex justify-end">
         <form action="/auth/sign-out" method="post">
           <MBButton type="submit" color="white" size="md">
