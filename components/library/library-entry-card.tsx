@@ -3,6 +3,7 @@ import Link from "next/link";
 import { EntryActionsMenu } from "@/components/library/entry-actions-menu";
 import { MBBookCover } from "@/components/mb/book-cover";
 import { MBCard } from "@/components/mb/card";
+import { MBHeartRating } from "@/components/mb/heart-rating";
 import { MBProgress } from "@/components/mb/progress";
 import { MBStatus } from "@/components/mb/status";
 import { MBSticker } from "@/components/mb/sticker";
@@ -90,6 +91,13 @@ export function LibraryEntryCard({ entry }: { entry: LibraryEntry }) {
         >
           página {entry.currentPage}
         </p>
+      )}
+
+      {/* Rating — only for finished books with a rating set */}
+      {entry.status === "read" && entry.rating !== null && (
+        <div aria-label={`Valoración: ${entry.rating} de 5`} className="flex w-full justify-center">
+          <MBHeartRating value={entry.rating} size={16} />
+        </div>
       )}
 
       <div className="flex w-full items-center justify-between gap-2">
