@@ -11,7 +11,7 @@ interface HomeTopBarProps {
 
 export function HomeTopBar({ name, totalCount }: HomeTopBarProps) {
   return (
-    <header className="flex items-start justify-between gap-4">
+    <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="relative">
         <MBSparkle size={28} twinkle aria-hidden="true" className="absolute -top-1 left-24" />
         <MBSparkle size={18} twinkle aria-hidden="true" className="absolute top-10 -left-4" />
