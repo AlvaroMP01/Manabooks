@@ -2,7 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it, vi } from "vitest";
 
 import type { Database } from "@/lib/database.types";
-import { getProfileStats } from "@/lib/library/profile-stats";
+import {
+  computeAchievements,
+  getProfileStats,
+  type ProfileStats,
+} from "@/lib/library/profile-stats";
 
 type StatsRow = {
   rating: number | null;
@@ -84,5 +88,95 @@ describe("getProfileStats", () => {
     expect(stats.monthlyReadCounts[0]).toBe(2);
     expect(stats.monthlyReadCounts[4]).toBe(1);
     expect(stats.monthlyReadCounts[11]).toBe(0);
+  });
+});
+
+const EMPTY: ProfileStats = {
+  totalRead: 0,
+  totalPages: 0,
+  avgRating: null,
+  ratedCount: 0,
+  monthlyReadCounts: Array(12).fill(0),
+  yearRead: 0,
+};
+
+describe("computeAchievements", () => {
+  it("returns 8 badges in stable order with all locked for greenfield stats", () => {
+    const badges = computeAchievements({ stats: EMPTY, currentStreak: 0, yearGoal: 0 });
+    expect(badges).toHaveLength(8);
+    expect(badges.map((b) => b.id)).toEqual([
+      "streak-7",
+      "read-10",
+      "read-50",
+      "read-100",
+      "critic",
+      "pages-10k",
+      "month-5",
+      "goal-done",
+    ]);
+    expect(badges.every((b) => !b.unlocked)).toBe(true);
+  });
+
+  it("unlocks streak-7 at exactly 7 days", () => {
+    const a = computeAchievements({ stats: EMPTY, currentStreak: 6, yearGoal: 0 });
+    const b = computeAchievements({ stats: EMPTY, currentStreak: 7, yearGoal: 0 });
+    expect(a.find((x) => x.id === "streak-7")?.unlocked).toBe(false);
+    expect(b.find((x) => x.id === "streak-7")?.unlocked).toBe(true);
+  });
+
+  it("unlocks read-10/50/100 at thresholds", () => {
+    const badges = computeAchievements({
+      stats: { ...EMPTY, totalRead: 60 },
+      currentStreak: 0,
+      yearGoal: 0,
+    });
+    expect(badges.find((b) => b.id === "read-10")?.unlocked).toBe(true);
+    expect(badges.find((b) => b.id === "read-50")?.unlocked).toBe(true);
+    expect(badges.find((b) => b.id === "read-100")?.unlocked).toBe(false);
+  });
+
+  it("unlocks critic at ratedCount >= 10", () => {
+    const badges = computeAchievements({
+      stats: { ...EMPTY, ratedCount: 10 },
+      currentStreak: 0,
+      yearGoal: 0,
+    });
+    expect(badges.find((b) => b.id === "critic")?.unlocked).toBe(true);
+  });
+
+  it("unlocks pages-10k at 10000 pages", () => {
+    const badges = computeAchievements({
+      stats: { ...EMPTY, totalPages: 10000 },
+      currentStreak: 0,
+      yearGoal: 0,
+    });
+    expect(badges.find((b) => b.id === "pages-10k")?.unlocked).toBe(true);
+  });
+
+  it("unlocks month-5 when any month reaches 5 reads", () => {
+    const months = Array(12).fill(0);
+    months[3] = 5;
+    const badges = computeAchievements({
+      stats: { ...EMPTY, monthlyReadCounts: months },
+      currentStreak: 0,
+      yearGoal: 0,
+    });
+    expect(badges.find((b) => b.id === "month-5")?.unlocked).toBe(true);
+  });
+
+  it("unlocks goal-done only when yearGoal > 0 AND yearRead >= yearGoal", () => {
+    const locked = computeAchievements({
+      stats: { ...EMPTY, yearRead: 5 },
+      currentStreak: 0,
+      yearGoal: 0,
+    });
+    expect(locked.find((b) => b.id === "goal-done")?.unlocked).toBe(false);
+
+    const unlocked = computeAchievements({
+      stats: { ...EMPTY, yearRead: 24 },
+      currentStreak: 0,
+      yearGoal: 24,
+    });
+    expect(unlocked.find((b) => b.id === "goal-done")?.unlocked).toBe(true);
   });
 });
