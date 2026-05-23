@@ -85,6 +85,7 @@ const BASE_ENTRY: LibraryEntry = {
   rating: null,
   genre: null,
   lastProgressAt: null,
+  quickNote: null,
 };
 
 describe("UpdateProgressDialog — phase survives mid-flow remount", () => {
