@@ -1,42 +1,55 @@
 import { MBCard } from "@/components/mb/card";
 import { MBProgress } from "@/components/mb/progress";
+import { MBSticker } from "@/components/mb/sticker";
 import type { LibraryEntry } from "@/lib/library/types";
-import { formatReadingDate } from "@/lib/library/utils";
 
-export function EntryStats({ entry }: { entry: LibraryEntry }) {
-  const startedFmt = formatReadingDate(entry.startedAt);
-  const finishedFmt = formatReadingDate(entry.finishedAt);
-  const hasProgress = entry.totalPages !== null;
-  const showSection = hasProgress || entry.currentPage > 0 || startedFmt || finishedFmt;
-
-  if (!showSection) return null;
+export function EntryProgressCard({ entry }: { entry: LibraryEntry }) {
+  const hasTotal = entry.totalPages !== null;
+  const pct =
+    hasTotal && entry.totalPages! > 0
+      ? Math.round((entry.currentPage / entry.totalPages!) * 100)
+      : 0;
 
   return (
-    <MBCard color="#FFFCFE" className="flex flex-col gap-4 p-6">
-      {hasProgress && (
-        <div className="space-y-2">
-          <MBProgress value={entry.currentPage} max={entry.totalPages!} height={14} />
-          <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "#3B1F47" }}>
-            página {entry.currentPage} de {entry.totalPages} ·{" "}
-            {Math.round((entry.currentPage / entry.totalPages!) * 100)}%
-          </p>
-        </div>
-      )}
-      {!hasProgress && entry.currentPage > 0 && (
-        <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "#3B1F47" }}>
-          página {entry.currentPage}
-        </p>
-      )}
-      {startedFmt && (
-        <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "#3B1F47" }}>
-          empezado: {startedFmt}
-        </p>
-      )}
-      {finishedFmt && (
-        <p style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "#3B1F47" }}>
-          terminado: {finishedFmt}
-        </p>
-      )}
+    <MBCard color="var(--color-mb-cream)" radius={20} className="p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <MBSticker color="var(--color-mb-white)" fontSize={11} padding="4px 10px" rotate={-2}>
+          TU PROGRESO
+        </MBSticker>
+        {hasTotal && (
+          <span
+            style={{
+              fontFamily: "var(--font-curly)",
+              fontSize: 28,
+              color: "var(--color-mb-pinkDeep)",
+              WebkitTextStroke: "1.5px #3B1F47",
+              paintOrder: "stroke fill",
+              lineHeight: 0.9,
+            }}
+          >
+            {pct}%
+          </span>
+        )}
+      </div>
+      <MBProgress
+        value={entry.currentPage}
+        max={hasTotal ? entry.totalPages! : Math.max(entry.currentPage, 1)}
+        height={20}
+      />
+      <div className="mt-3">
+        <span
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: 13,
+            fontWeight: 700,
+            color: "#3B1F47",
+          }}
+        >
+          {hasTotal
+            ? `pág. ${entry.currentPage} de ${entry.totalPages}`
+            : `${entry.currentPage} págs. leídas`}
+        </span>
+      </div>
     </MBCard>
   );
 }
