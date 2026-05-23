@@ -90,71 +90,35 @@ const ENTRY_WITH_NOTE: LibraryEntry = {
 
 describe("NoteDialog", () => {
   it("renders textarea pre-populated with entry.quickNote when non-null", () => {
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={vi.fn()}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={vi.fn()} />);
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveValue("Me gustó el capítulo 3");
   });
 
   it("renders empty textarea when entry.quickNote is null", () => {
-    render(
-      <NoteDialog
-        entry={BASE_ENTRY}
-        open={true}
-        onOpenChange={vi.fn()}
-      />
-    );
+    render(<NoteDialog entry={BASE_ENTRY} open={true} onOpenChange={vi.fn()} />);
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveValue("");
   });
 
   it("does NOT render 'Quitar nota' button when entry.quickNote is null", () => {
-    render(
-      <NoteDialog
-        entry={BASE_ENTRY}
-        open={true}
-        onOpenChange={vi.fn()}
-      />
-    );
+    render(<NoteDialog entry={BASE_ENTRY} open={true} onOpenChange={vi.fn()} />);
     expect(screen.queryByRole("button", { name: /quitar nota/i })).not.toBeInTheDocument();
   });
 
   it("renders 'Quitar nota' button when entry.quickNote is not null", () => {
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={vi.fn()}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={vi.fn()} />);
     expect(screen.getByRole("button", { name: /quitar nota/i })).toBeInTheDocument();
   });
 
   it("'Guardar' is disabled when textarea content matches entry.quickNote (trimmed)", () => {
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={vi.fn()}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={vi.fn()} />);
     const guardar = screen.getByRole("button", { name: /guardar/i });
     expect(guardar).toBeDisabled();
   });
 
   it("'Guardar' is enabled when textarea content differs from entry.quickNote", () => {
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={vi.fn()}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={vi.fn()} />);
     const textarea = screen.getByRole("textbox");
     fireEvent.change(textarea, { target: { value: "Texto diferente" } });
     const guardar = screen.getByRole("button", { name: /guardar/i });
@@ -166,13 +130,7 @@ describe("NoteDialog", () => {
     mockUpdateEntryNote.mockResolvedValue({ ok: true, data: undefined });
     const handleOpenChange = vi.fn();
 
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={handleOpenChange}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={handleOpenChange} />);
 
     const textarea = screen.getByRole("textbox");
     fireEvent.change(textarea, { target: { value: "Mi nota actualizada" } });
@@ -197,13 +155,7 @@ describe("NoteDialog", () => {
     mockUpdateEntryNote.mockResolvedValue({ ok: false, code: "unknown" });
     const handleOpenChange = vi.fn();
 
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={handleOpenChange}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={handleOpenChange} />);
 
     const textarea = screen.getByRole("textbox");
     fireEvent.change(textarea, { target: { value: "Texto con error" } });
@@ -214,9 +166,7 @@ describe("NoteDialog", () => {
     });
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        "No se pudo guardar la nota. Inténtalo de nuevo."
-      );
+      expect(toast.error).toHaveBeenCalledWith("No se pudo guardar la nota. Inténtalo de nuevo.");
     });
     expect(handleOpenChange).not.toHaveBeenCalledWith(false);
   });
@@ -226,13 +176,7 @@ describe("NoteDialog", () => {
     mockUpdateEntryNote.mockResolvedValue({ ok: true, data: undefined });
     const handleOpenChange = vi.fn();
 
-    render(
-      <NoteDialog
-        entry={ENTRY_WITH_NOTE}
-        open={true}
-        onOpenChange={handleOpenChange}
-      />
-    );
+    render(<NoteDialog entry={ENTRY_WITH_NOTE} open={true} onOpenChange={handleOpenChange} />);
 
     const quitarNota = screen.getByRole("button", { name: /quitar nota/i });
     await act(async () => {
@@ -253,13 +197,7 @@ describe("NoteDialog", () => {
     const handleOpenChange = vi.fn();
     mockUpdateEntryNote.mockReset();
 
-    render(
-      <NoteDialog
-        entry={BASE_ENTRY}
-        open={true}
-        onOpenChange={handleOpenChange}
-      />
-    );
+    render(<NoteDialog entry={BASE_ENTRY} open={true} onOpenChange={handleOpenChange} />);
 
     const cancelar = screen.getByRole("button", { name: /cancelar/i });
     fireEvent.click(cancelar);

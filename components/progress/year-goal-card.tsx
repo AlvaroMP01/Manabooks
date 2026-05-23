@@ -62,10 +62,7 @@ export function YearGoalCard({ yearGoal: initialYearGoal }: YearGoalCardProps) {
         </p>
 
         {/* Displayed goal counter */}
-        <div
-          aria-live="polite"
-          style={{ display: "flex", alignItems: "baseline", gap: 6 }}
-        >
+        <div aria-live="polite" style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
           <span
             style={{
               fontFamily: "var(--font-curly)",

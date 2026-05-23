@@ -39,7 +39,7 @@ export default async function HomePage() {
   const now = new Date();
   const yearStartUTC = new Date(Date.UTC(now.getUTCFullYear(), 0, 1)).toISOString();
   const monthStartUTC = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
   ).toISOString();
 
   const [

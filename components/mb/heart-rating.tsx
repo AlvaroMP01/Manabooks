@@ -27,11 +27,7 @@ export function MBHeartRating({
           onClick={onChange ? () => onChange(i + 1) : undefined}
           style={{ cursor: onChange ? "pointer" : "default" }}
         >
-          <MBHeart
-            size={size}
-            color={i < value ? color : "#FFD0E7"}
-            outline="#3B1F47"
-          />
+          <MBHeart size={size} color={i < value ? color : "#FFD0E7"} outline="#3B1F47" />
         </span>
       ))}
     </div>

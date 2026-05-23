@@ -107,9 +107,7 @@ export function RecentReadsCard({ entries }: RecentReadsCardProps) {
                 <div
                   role="img"
                   aria-label={
-                    entry.rating !== null
-                      ? `Valoración: ${entry.rating} de 5`
-                      : "Sin valoración"
+                    entry.rating !== null ? `Valoración: ${entry.rating} de 5` : "Sin valoración"
                   }
                   style={{
                     display: "flex",

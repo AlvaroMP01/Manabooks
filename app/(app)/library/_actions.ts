@@ -189,9 +189,7 @@ export async function updateProgress(
   return { ok: true, data: { promptComplete: transition.promptComplete } };
 }
 
-export async function updateEntryRating(
-  input: UpdateEntryRatingInput
-): Promise<ActionResult> {
+export async function updateEntryRating(input: UpdateEntryRatingInput): Promise<ActionResult> {
   const parsed = updateEntryRatingSchema.safeParse(input);
   if (!parsed.success) return { ok: false, code: "invalid_input" };
 

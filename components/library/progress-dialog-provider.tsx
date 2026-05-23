@@ -51,14 +51,11 @@ export function ProgressDialogProvider({ children }: { children: ReactNode }) {
   const [noteEntry, setNoteEntry] = useState<LibraryEntry | null>(null);
   const [noteSession, setNoteSession] = useState(0);
 
-  const openDialog = useCallback(
-    (next: LibraryEntry, phase: DialogInitialPhase = "editing") => {
-      setEntry(next);
-      setInitialPhase(phase);
-      setSession((s) => s + 1);
-    },
-    [],
-  );
+  const openDialog = useCallback((next: LibraryEntry, phase: DialogInitialPhase = "editing") => {
+    setEntry(next);
+    setInitialPhase(phase);
+    setSession((s) => s + 1);
+  }, []);
 
   const openNoteDialog = useCallback((next: LibraryEntry) => {
     setNoteEntry(next);

@@ -61,7 +61,7 @@ export function ReadingRow({ entry }: ReadingRowProps) {
             width={60}
             height={90}
             tilt={-2}
-            className="block lg:hidden flex-shrink-0"
+            className="block flex-shrink-0 lg:hidden"
           />
           <MBBookCover
             title={entry.title}
@@ -70,7 +70,7 @@ export function ReadingRow({ entry }: ReadingRowProps) {
             width={80}
             height={120}
             tilt={-2}
-            className="hidden lg:block flex-shrink-0"
+            className="hidden flex-shrink-0 lg:block"
           />
 
           {/* Content */}
@@ -227,7 +227,6 @@ export function ReadingRow({ entry }: ReadingRowProps) {
           </div>
         </div>
       </MBCard>
-
     </li>
   );
 }
