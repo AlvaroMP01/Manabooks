@@ -9,6 +9,14 @@ interface LibrarySearchableGridProps {
   entries: LibraryEntry[];
 }
 
+type SortBy = "recent" | "name" | "rating";
+
+const SORT_OPTIONS: { value: SortBy; label: string }[] = [
+  { value: "recent", label: "Más recientes" },
+  { value: "name", label: "Nombre A→Z" },
+  { value: "rating", label: "Valoración" },
+];
+
 /**
  * Normalize for diacritic-insensitive substring search.
  * "Perdón" → "perdon" so users searching "perdon" still match.
@@ -20,9 +28,32 @@ function normalize(s: string): string {
     .replace(/\p{Diacritic}/gu, "");
 }
 
-/** Library grid with a client-side title/author search filter. */
+function sortEntries(entries: LibraryEntry[], sortBy: SortBy): LibraryEntry[] {
+  const copy = [...entries];
+  if (sortBy === "name") {
+    copy.sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: "base", numeric: true })
+    );
+  } else if (sortBy === "rating") {
+    copy.sort((a, b) => {
+      const ar = a.rating ?? -1;
+      const br = b.rating ?? -1;
+      if (ar !== br) return br - ar;
+      return a.title.localeCompare(b.title, undefined, {
+        sensitivity: "base",
+        numeric: true,
+      });
+    });
+  } else {
+    copy.sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
+  }
+  return copy;
+}
+
+/** Library grid with a client-side title/author search filter + sort selector. */
 export function LibrarySearchableGrid({ entries }: LibrarySearchableGridProps) {
   const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortBy>("recent");
 
   const filtered = useMemo(() => {
     const q = normalize(query.trim());
@@ -33,40 +64,80 @@ export function LibrarySearchableGrid({ entries }: LibrarySearchableGridProps) {
     });
   }, [entries, query]);
 
+  const sorted = useMemo(() => sortEntries(filtered, sortBy), [filtered, sortBy]);
+
   const hasQuery = query.trim().length > 0;
 
   return (
     <div className="flex flex-col gap-4">
-      <label htmlFor="library-search" className="flex flex-col gap-1">
-        <span className="sr-only">Buscar en mi biblioteca</span>
-        <input
-          id="library-search"
-          type="search"
-          inputMode="search"
-          value={query}
-          placeholder="Busca por título o autor…"
-          onChange={(e) => setQuery(e.target.value)}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+        <label htmlFor="library-search" className="flex-1">
+          <span className="sr-only">Buscar en mi biblioteca</span>
+          <input
+            id="library-search"
+            type="search"
+            inputMode="search"
+            value={query}
+            placeholder="Busca por título o autor…"
+            onChange={(e) => setQuery(e.target.value)}
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 15,
+              color: "#3B1F47",
+              border: "2px solid #3B1F47",
+              borderRadius: 999,
+              padding: "10px 18px",
+              width: "100%",
+              boxShadow: "3px 4px 0 #3B1F47",
+              outline: "none",
+              background: "#FFFCFE",
+            }}
+          />
+        </label>
+        <label
+          htmlFor="library-sort"
+          className="flex items-center gap-2 self-start sm:self-auto"
           style={{
             fontFamily: "var(--font-body)",
-            fontSize: 15,
+            fontSize: 13,
+            fontWeight: 700,
             color: "#3B1F47",
-            border: "2px solid #3B1F47",
-            borderRadius: 999,
-            padding: "10px 18px",
-            width: "100%",
-            boxShadow: "3px 4px 0 #3B1F47",
-            outline: "none",
-            background: "#FFFCFE",
           }}
-        />
-      </label>
+        >
+          Ordenar por:
+          <select
+            id="library-sort"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortBy)}
+            className="focus-visible:ring-mb-pink-deep focus-visible:ring-offset-mb-cream focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            style={{
+              borderRadius: 999,
+              padding: "8px 14px",
+              border: "2px solid #3B1F47",
+              boxShadow: "2px 3px 0 #3B1F47",
+              background: "var(--color-mb-white)",
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              fontWeight: 700,
+              color: "#3B1F47",
+              cursor: "pointer",
+            }}
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
-      {filtered.length > 0 ? (
+      {sorted.length > 0 ? (
         <ul
           role="list"
           className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         >
-          {filtered.map((entry) => (
+          {sorted.map((entry) => (
             <li key={entry.id}>
               <LibraryEntryCard entry={entry} />
             </li>
