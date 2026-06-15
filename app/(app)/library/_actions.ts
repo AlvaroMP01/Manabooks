@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 
 import type { Database } from "@/lib/database.types";
 import type { ActionResult } from "@/lib/library/action-result";
-import { computeProgressTransition, computeStatusChange } from "@/lib/library/transitions";
+import {
+  computeProgressTransition,
+  computeStatusChange,
+  shouldBumpProgressTimestamp,
+} from "@/lib/library/transitions";
 import type { EntryStatus } from "@/lib/library/types";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -153,19 +157,22 @@ export async function updateProgress(
   // 6. Build a single typed UPDATE payload — touch status/started_at/finished_at only when auto-transition fires.
   type LibraryEntriesUpdate = Database["public"]["Tables"]["library_entries"]["Update"];
 
-  // Decide whether this update represents progress on a reading entry.
-  // last_progress_at MUST bump ONLY when:
-  //   * the entry is currently in "reading" status, AND
-  //   * the page count actually changed.
-  // Auto-transitions (to_read → reading) are NOT counted here — those are
-  // the FIRST progress event but on the row's PREVIOUS status.
-  const shouldBumpProgressTimestamp =
-    current.status === "reading" && parsed.data.currentPage !== current.current_page;
+  // Decide whether this update represents progress worth counting toward the
+  // reading streak. Bump when the page changed AND the entry is being read
+  // now OR is transitioning into reading; this counts the first reading day
+  // on a freshly-added book, and still counts the day a book is finished
+  // (reading → read).
+  const bumpProgressTimestamp = shouldBumpProgressTimestamp({
+    prevStatus: current.status as EntryStatus,
+    autoStatus: transition.autoStatus,
+    currentPage: parsed.data.currentPage,
+    previousPage: current.current_page,
+  });
 
   const update: LibraryEntriesUpdate = {
     current_page: parsed.data.currentPage,
     total_pages: effectiveTotalPages,
-    ...(shouldBumpProgressTimestamp ? { last_progress_at: new Date().toISOString() } : {}),
+    ...(bumpProgressTimestamp ? { last_progress_at: new Date().toISOString() } : {}),
     ...(transition.autoStatus !== null
       ? {
           status: transition.autoStatus,
