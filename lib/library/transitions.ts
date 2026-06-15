@@ -70,7 +70,14 @@ export type ProgressTimestampBumpInput = {
  * Bump when the page changed AND the entry is being read now OR is
  * transitioning into reading; this counts the first reading day on a
  * freshly-added book, and still counts the day a book is finished
- * (reading → read). Pure function — no side effects.
+ * (reading → read).
+ *
+ * Re-engaging a non-reading book — paused/abandoned → reading (rule 1c) or
+ * read → reading re-read (rule 1b) — counts toward the streak WHEN pages
+ * are added (currentPage changes). Updating progress without a page change
+ * does NOT count (no pages read = no streak credit).
+ *
+ * Pure function — no side effects.
  */
 export function shouldBumpProgressTimestamp(input: ProgressTimestampBumpInput): boolean {
   const { prevStatus, autoStatus, currentPage, previousPage } = input;

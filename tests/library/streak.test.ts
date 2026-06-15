@@ -1,8 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Database } from "@/lib/database.types";
 import { _internal, getCurrentStreak } from "@/lib/library/streak";
+import { STREAK_TIMEZONE } from "@/lib/library/streak-dates";
 
 // ---------------------------------------------------------------------------
 // Mock helper
@@ -99,15 +100,30 @@ describe("_internal.daysBetween", () => {
 // getCurrentStreak — integration tests via thenable Supabase mock
 // ---------------------------------------------------------------------------
 //
-// Timestamps below are constructed at MIDDAY UTC (12:00) so that converting
-// to Europe/Madrid (UTC+1 or UTC+2) never crosses a calendar-day boundary.
-// This keeps the "consecutive day" gaps intentional and avoids flakiness
-// near the Madrid midnight boundary.
+// The clock is frozen to a fixed Madrid-noon-ish instant so these tests don't
+// depend on real wall-clock time near the Europe/Madrid midnight boundary.
+// Date fixtures below are built off this pinned "now" (at UTC noon, so
+// converting to Europe/Madrid, UTC+1 or UTC+2, never crosses a calendar-day
+// boundary), keeping the "consecutive day" gaps intentional.
 
 describe("getCurrentStreak", () => {
+  const FIXED_NOW = new Date("2026-07-15T12:00:00Z");
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(FIXED_NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("ensures STREAK_TIMEZONE is Europe/Madrid (guards against accidental changes)", () => {
+    expect(STREAK_TIMEZONE).toBe("Europe/Madrid");
+  });
+
   it("returns streak 3 for three consecutive days", async () => {
-    const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
+    const today = FIXED_NOW;
     const yesterday = new Date(today.getTime() - 86_400_000);
     const twoDaysAgo = new Date(today.getTime() - 2 * 86_400_000);
 
@@ -123,8 +139,7 @@ describe("getCurrentStreak", () => {
   });
 
   it("continues streak when gap between two entries is exactly 2 days (≤ MAX_GAP_DAYS)", async () => {
-    const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
+    const today = FIXED_NOW;
     const twoDaysAgo = new Date(today.getTime() - 2 * 86_400_000);
 
     const client = mockSupabaseForStreak([
@@ -137,8 +152,7 @@ describe("getCurrentStreak", () => {
   });
 
   it("breaks streak when gap between two entries is 3 days (> MAX_GAP_DAYS)", async () => {
-    const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
+    const today = FIXED_NOW;
     const threeDaysAgo = new Date(today.getTime() - 3 * 86_400_000);
 
     const client = mockSupabaseForStreak([
@@ -152,8 +166,7 @@ describe("getCurrentStreak", () => {
   });
 
   it("returns streak 0 when latest activity is more than 2 days ago", async () => {
-    const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
+    const today = FIXED_NOW;
     const threeDaysAgo = new Date(today.getTime() - 3 * 86_400_000);
 
     const client = mockSupabaseForStreak([{ last_progress_at: threeDaysAgo.toISOString() }]);
