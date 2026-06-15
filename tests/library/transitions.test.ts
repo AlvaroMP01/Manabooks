@@ -539,11 +539,15 @@ describe("shouldBumpProgressTimestamp", () => {
     ).toBe(true);
   });
 
-  it("reading -> read (finishing) + page changed → bump TRUE", () => {
+  // autoStatus is only ever "reading" | null — computeProgressTransition never
+  // returns autoStatus: "read" (completion is signaled via promptComplete).
+  // Finishing a book via updateProgress is just a "reading" entry whose page
+  // changed, with no auto-transition.
+  it("reading + page changed (no auto-transition, incl. finishing) → bump TRUE", () => {
     expect(
       shouldBumpProgressTimestamp({
         prevStatus: "reading",
-        autoStatus: "read",
+        autoStatus: null,
         currentPage: 200,
         previousPage: 199,
       })
@@ -568,6 +572,53 @@ describe("shouldBumpProgressTimestamp", () => {
         autoStatus: null,
         currentPage: 0,
         previousPage: 0,
+      })
+    ).toBe(false);
+  });
+
+  // Re-engagement (rule 1c): paused/abandoned → reading on forward progress.
+  it("paused -> reading (re-engagement) + page changed → bump TRUE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "paused",
+        autoStatus: "reading",
+        currentPage: 51,
+        previousPage: 50,
+      })
+    ).toBe(true);
+  });
+
+  it("abandoned -> reading (re-engagement) + page changed → bump TRUE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "abandoned",
+        autoStatus: "reading",
+        currentPage: 11,
+        previousPage: 10,
+      })
+    ).toBe(true);
+  });
+
+  // Re-engagement (rule 1b): read → reading on backward progress (re-read).
+  it("read -> reading (re-read) + page changed → bump TRUE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "read",
+        autoStatus: "reading",
+        currentPage: 10,
+        previousPage: 200,
+      })
+    ).toBe(true);
+  });
+
+  // Re-engagement without progress: no pages read = no streak credit.
+  it("paused -> reading (re-engagement) + page UNCHANGED → bump FALSE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "paused",
+        autoStatus: "reading",
+        currentPage: 50,
+        previousPage: 50,
       })
     ).toBe(false);
   });

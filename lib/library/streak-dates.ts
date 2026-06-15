@@ -31,6 +31,8 @@ export const MAX_GAP_DAYS = 2;
  * automatically, and the "en-CA" locale formats dates as YYYY-MM-DD.
  */
 export function toStreakDate(iso: string): string {
+  // Relies on a full-ICU Node runtime for the "Europe/Madrid" timezone data
+  // (Vercel's Node runtime ships full ICU by default).
   const fmt = new Intl.DateTimeFormat("en-CA", {
     timeZone: STREAK_TIMEZONE,
     year: "numeric",
