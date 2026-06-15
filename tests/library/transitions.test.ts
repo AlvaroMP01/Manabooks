@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { computeProgressTransition, computeStatusChange } from "@/lib/library/transitions";
+import {
+  computeProgressTransition,
+  computeStatusChange,
+  shouldBumpProgressTimestamp,
+} from "@/lib/library/transitions";
 
 const FIXED_TS = "2026-01-01T00:00:00.000Z";
 
@@ -509,5 +513,62 @@ describe("computeProgressTransition", () => {
     });
     expect(result.autoStatus).toBeNull();
     expect(result.promptComplete).toBe(false);
+  });
+});
+
+describe("shouldBumpProgressTimestamp", () => {
+  it("reading + page changed → bump TRUE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "reading",
+        autoStatus: null,
+        currentPage: 50,
+        previousPage: 30,
+      })
+    ).toBe(true);
+  });
+
+  it("to_read + autoStatus 'reading' (first progress) + page changed → bump TRUE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "to_read",
+        autoStatus: "reading",
+        currentPage: 5,
+        previousPage: 0,
+      })
+    ).toBe(true);
+  });
+
+  it("reading -> read (finishing) + page changed → bump TRUE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "reading",
+        autoStatus: "read",
+        currentPage: 200,
+        previousPage: 199,
+      })
+    ).toBe(true);
+  });
+
+  it("page unchanged → bump FALSE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "reading",
+        autoStatus: null,
+        currentPage: 50,
+        previousPage: 50,
+      })
+    ).toBe(false);
+  });
+
+  it("to_read with no transition into reading → bump FALSE", () => {
+    expect(
+      shouldBumpProgressTimestamp({
+        prevStatus: "to_read",
+        autoStatus: null,
+        currentPage: 0,
+        previousPage: 0,
+      })
+    ).toBe(false);
   });
 });

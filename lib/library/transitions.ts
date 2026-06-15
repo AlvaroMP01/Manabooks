@@ -57,6 +57,26 @@ export type ProgressTransitionResult = {
   promptComplete: boolean;
 };
 
+export type ProgressTimestampBumpInput = {
+  prevStatus: EntryStatus;
+  autoStatus: EntryStatus | null;
+  currentPage: number;
+  previousPage: number;
+};
+
+/**
+ * Decide whether last_progress_at should bump on a progress update.
+ *
+ * Bump when the page changed AND the entry is being read now OR is
+ * transitioning into reading; this counts the first reading day on a
+ * freshly-added book, and still counts the day a book is finished
+ * (reading → read). Pure function — no side effects.
+ */
+export function shouldBumpProgressTimestamp(input: ProgressTimestampBumpInput): boolean {
+  const { prevStatus, autoStatus, currentPage, previousPage } = input;
+  return currentPage !== previousPage && (prevStatus === "reading" || autoStatus === "reading");
+}
+
 /** Compute status auto-transitions and completion prompt flag driven by progress updates. Pure function — no side effects. */
 export function computeProgressTransition(
   input: ProgressTransitionInput

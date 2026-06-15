@@ -40,24 +40,39 @@ function mockSupabaseForStreak(rows: StreakRow[]): SupabaseClient<Database> {
 }
 
 // ---------------------------------------------------------------------------
-// _internal.toUtcDate
+// _internal.toStreakDate
 // ---------------------------------------------------------------------------
 
-describe("_internal.toUtcDate", () => {
+describe("_internal.toStreakDate", () => {
   it("converts a standard ISO timestamp with time component", () => {
-    expect(_internal.toUtcDate("2026-03-15T14:30:00.000Z")).toBe("2026-03-15");
+    expect(_internal.toStreakDate("2026-03-15T14:30:00.000Z")).toBe("2026-03-15");
   });
 
   it("converts midnight UTC correctly", () => {
-    expect(_internal.toUtcDate("2026-06-01T00:00:00.000Z")).toBe("2026-06-01");
+    expect(_internal.toStreakDate("2026-06-01T00:00:00.000Z")).toBe("2026-06-01");
   });
 
-  it("converts near year-end (Dec 31 23:59:59.999Z)", () => {
-    expect(_internal.toUtcDate("2026-12-31T23:59:59.999Z")).toBe("2026-12-31");
+  it("converts near year-end (Dec 31 23:59:59.999Z) — Madrid is already Jan 1 (CET, UTC+1)", () => {
+    expect(_internal.toStreakDate("2026-12-31T23:59:59.999Z")).toBe("2027-01-01");
   });
 
   it("converts edge of month (Jan 31 noon UTC)", () => {
-    expect(_internal.toUtcDate("2026-01-31T12:00:00.000Z")).toBe("2026-01-31");
+    expect(_internal.toStreakDate("2026-01-31T12:00:00.000Z")).toBe("2026-01-31");
+  });
+
+  // Summer (CEST, UTC+2): 22:30 UTC = 00:30 Madrid next day.
+  it("summer: 22:30 UTC rolls over to the next Madrid day (CEST, UTC+2)", () => {
+    expect(_internal.toStreakDate("2026-07-15T22:30:00Z")).toBe("2026-07-16");
+  });
+
+  // Summer (CEST, UTC+2): 21:00 UTC = 23:00 Madrid same day.
+  it("summer: 21:00 UTC stays on the same Madrid day (CEST, UTC+2)", () => {
+    expect(_internal.toStreakDate("2026-07-15T21:00:00Z")).toBe("2026-07-15");
+  });
+
+  // Winter (CET, UTC+1): 23:30 UTC = 00:30 Madrid next day.
+  it("winter: 23:30 UTC rolls over to the next Madrid day (CET, UTC+1)", () => {
+    expect(_internal.toStreakDate("2026-01-15T23:30:00Z")).toBe("2026-01-16");
   });
 });
 
@@ -83,11 +98,16 @@ describe("_internal.daysBetween", () => {
 // ---------------------------------------------------------------------------
 // getCurrentStreak — integration tests via thenable Supabase mock
 // ---------------------------------------------------------------------------
+//
+// Timestamps below are constructed at MIDDAY UTC (12:00) so that converting
+// to Europe/Madrid (UTC+1 or UTC+2) never crosses a calendar-day boundary.
+// This keeps the "consecutive day" gaps intentional and avoids flakiness
+// near the Madrid midnight boundary.
 
 describe("getCurrentStreak", () => {
   it("returns streak 3 for three consecutive days", async () => {
     const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
     const yesterday = new Date(today.getTime() - 86_400_000);
     const twoDaysAgo = new Date(today.getTime() - 2 * 86_400_000);
 
@@ -104,7 +124,7 @@ describe("getCurrentStreak", () => {
 
   it("continues streak when gap between two entries is exactly 2 days (≤ MAX_GAP_DAYS)", async () => {
     const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
     const twoDaysAgo = new Date(today.getTime() - 2 * 86_400_000);
 
     const client = mockSupabaseForStreak([
@@ -118,7 +138,7 @@ describe("getCurrentStreak", () => {
 
   it("breaks streak when gap between two entries is 3 days (> MAX_GAP_DAYS)", async () => {
     const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
     const threeDaysAgo = new Date(today.getTime() - 3 * 86_400_000);
 
     const client = mockSupabaseForStreak([
@@ -133,7 +153,7 @@ describe("getCurrentStreak", () => {
 
   it("returns streak 0 when latest activity is more than 2 days ago", async () => {
     const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12));
     const threeDaysAgo = new Date(today.getTime() - 3 * 86_400_000);
 
     const client = mockSupabaseForStreak([{ last_progress_at: threeDaysAgo.toISOString() }]);

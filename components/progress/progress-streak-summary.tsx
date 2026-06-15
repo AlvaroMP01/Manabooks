@@ -1,19 +1,18 @@
 import { MBCard } from "@/components/mb/card";
+import { daysBetween, toStreakDate } from "@/lib/library/streak-dates";
 
 interface ProgressStreakSummaryProps {
   currentStreak: number;
   lastActivityAt: string | null;
 }
 
-/** formatLastActivity — UTC calendar diff, matching streak.ts convention. Pure, no imports needed. */
+/** formatLastActivity — Europe/Madrid calendar diff, matching streak.ts convention. Pure, shares date helpers with the streak calculator. */
 function formatLastActivity(lastActivityAt: string | null): string {
   if (!lastActivityAt) return "aún no actualizaste nada ♡";
 
-  const last = new Date(lastActivityAt);
-  const today = new Date();
-  const lastUtc = Date.UTC(last.getUTCFullYear(), last.getUTCMonth(), last.getUTCDate());
-  const todayUtc = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
-  const days = Math.round((todayUtc - lastUtc) / 86_400_000);
+  const lastDate = toStreakDate(lastActivityAt);
+  const today = toStreakDate(new Date().toISOString());
+  const days = daysBetween(today, lastDate);
 
   if (days <= 0) return "última actualización: hoy";
   if (days === 1) return "última actualización: ayer";
