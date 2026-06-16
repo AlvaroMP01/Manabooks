@@ -1,5 +1,6 @@
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Bagel_Fat_One, Caveat, Pacifico, Quicksand } from "next/font/google";
 
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {children}
+        <Analytics />
       </body>
     </html>
   );
